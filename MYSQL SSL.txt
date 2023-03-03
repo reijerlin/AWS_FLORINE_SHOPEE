@@ -1,0 +1,7 @@
+[mysqld]
+skip_ssl
+
+remove hex using https://madbray.com/mysql80-service-started-and-then-stopped-fixed/
+
+
+ALTER USER 'yourusername'@'localhost' IDENTIFIED WITH mysql_native_password BY 'yourpassword';

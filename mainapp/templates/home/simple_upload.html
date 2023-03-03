@@ -1,0 +1,26 @@
+{% extends 'layouts/base.html' %}
+
+{% load static %}
+
+{% block content %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="myfile">
+    <button type="submit">Upload</button>
+  </form>
+
+  {% if count %}
+    <!--<p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>-->
+    <p>File successfully uploaded at: {{ count }}</p>
+    <script type="text/javascript">   
+      function Redirect() 
+      {  
+        window.location.href = "{{ uploaded_file_url }}";
+      } 
+      document.write("You will be redirected to a new page in 3 seconds"); 
+      setTimeout('Redirect()', 3000);   
+    </script>
+  {% endif %}
+  
+  <!--<p><a href="{% url 'home' %}">Return to home</a></p>-->
+{% endblock %}
