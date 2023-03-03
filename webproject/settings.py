@@ -14,7 +14,6 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 LOGIN_REDIRECT_URL = "home"  # Route defined in home/urls.py
 LOGOUT_REDIRECT_URL = "home"  # Route defined in home/urls.py
 TEMPLATE_DIR = os.path.join(os.path.join(BASE_DIR, "mainapp"), "templates")  # ROOT dir for templates
@@ -34,7 +33,7 @@ ALLOWED_HOSTS = ['127.0.0.1','localhost','13.113.232.249','18.176.78.127']
 """
 DEBUG = True
 
-ALLOWED_HOSTS = ['18.176.78.127','127.0.0.1']
+ALLOWED_HOSTS = ['18.176.78.127','127.0.0.1','ec2-54-199-63-158.ap-northeast-1.compute.amazonaws.com']
 
 # Application definition
 
@@ -57,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'webproject.urls'
@@ -93,7 +93,7 @@ DATABASES = {
         'NAME': 'DEV',
         'USER': 'Eric',
         'PASSWORD': '1qaz@WSX',
-        'HOST': 'ec2-54-64-213-252.ap-northeast-1.compute.amazonaws.com',
+        'HOST': 'ec2-54-250-193-50.ap-northeast-1.compute.amazonaws.com',
         'PORT': '3306' ,
         'OPTIONS':{'charset':'utf8mb4'},
     }
@@ -137,7 +137,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#Add this in your settings.py file:
+STATICFILES_DIRS = [
+    BASE_DIR + '\static'
+]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
