@@ -2,11 +2,7 @@ from django.db import models
 from django.db import connections
 
 
-class Data(models.Model):
-    category = models.CharField(max_length = 10, 
-        choices = [('A', 'A'), ('B', 'B'), ('C', 'C')])
-    quantity = models.IntegerField(default=0)
-    pub_date = models.DateTimeField(auto_now=True)
+
 
 class HotSales(models.Model):
     MAIN_COMMODITY_NM = models.CharField(max_length = 200,primary_key=True)
@@ -31,11 +27,18 @@ class SUM_ACTUAL_PROFIT(models.Model):
     SUM_ACTUAL_PROFIT= models.IntegerField(default=0,primary_key=True)
     
 class COST(models.Model):
-
-    COST= models.IntegerField(default=0,primary_key=True)
+    USERNAME=models.CharField(max_length = 100,primary_key=True)
+    YYYYMM=models.CharField(max_length = 10)
+    COST= models.IntegerField(default=0)
 
     class Meta:
         db_table='COST'
+    # class Meta:
+    #     managed = False
+    #     db_table = 'COST'
+
+    # def __repr__(self):
+    #     return f'<COST: COST object ({self.USERNAME}, {self.YYYYMM}, {self.COST})>'
 
 class TOTAL_ORDERS(models.Model):
 
@@ -65,5 +68,25 @@ class SUM_TOTAL_PROFIT(models.Model):
 
     
     SUM_TOTAL_PROFIT= models.IntegerField(default=0,primary_key=True)
-
+class GETYYYYMM(models.Model):
+    YYYYMM= models.IntegerField(default=0,primary_key=True)
     
+    
+class GETYYYYMMDD(models.Model):
+    
+    YYYYMMDD=models.CharField(max_length = 10,primary_key=True)
+
+class ALLORDERS(models.Model):
+    ORDER_ID= models.CharField(max_length = 200,primary_key=True)
+    EFFDT= models.DateTimeField(auto_now=True)
+    STATUS= models.CharField(max_length = 20)
+    COMMODITY_NM= models.CharField(max_length = 512)
+    SHIIPPING_CODE=models.CharField(max_length = 30)
+    SHIPPING_TYPE= models.CharField(max_length = 20)
+    RECIPIENT_NAME= models.CharField(max_length = 20)
+    PRODUCT_GROSS= models.IntegerField(default=0)
+
+    class Meta:
+        db_table='ALLORDERS'
+ 
+   

@@ -66,9 +66,13 @@
                                         <div><a href="/page-forgot-password.html" class="small text-right">Lost password?</a></div>
                                     </div>-->
                                 </div>
-                                <div class="d-grid">
-                                    <button type="submit" name="login" class="btn btn-gray-800">Sign in</button>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" name="login" class="btn btn-gray-800">Sign in</button>    
+                                    <button type="submit" name="demo" class="btn btn-gray-800" onclick="filldemo('Demo', 'DemoDemo')">Demo</button>            
                                 </div>
+                               
+                                
+                                
                             </form>
                             <br />
                             <!--
@@ -103,4 +107,12 @@
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+<script type="text/javascript">
+    function filldemo(username,password)
+    {
+        document.getElementById("Username").value = username;
+        document.getElementById("Password").value = password;
+    }
+</script>
+{% endblock javascripts %}

@@ -3,15 +3,74 @@
 {% load static %}
 
 {% block content %}
+<div class="card card-body border-0 shadow table-wrapper table-responsive">
+  <table class="table table-hover">
+      <thead>
+          <tr>
+              
+              <th class="border-gray-200">任務描述</th>
+              <th class="border-gray-200">上傳檔案</th> 
+              <th class="border-gray-200">任務狀態</th>	           
+          </tr>
+      </thead>
+      <tbody>
+      {%for getdata,myfileid,uploadid,status,fs_Str,fe_Str in task%}
+        <tr>
+          <td><span class="fw-normal">{{getdata}}</span></td>   
+          <td>
+            <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="{{ myfileid }}" id="{{ myfileid }}" >
+            <button type="submit" name="upload" id="{{ uploadid }}" >Upload</button>
+            </form></td>
+            {% if status == '未完成' %}
+            <td><span class="fw-bold text-danger">{{status}}</span></td>  
+            {% else %}
+            <td><span class="fw-bold text-success">{{status}}</span></td>  
+            {% endif %}
+            
+        </tr> 
+      {% endfor %}
+    
+                         
+      </tbody>
+  </table>
+  
+</div>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+  <div class="d-block mb-4 mb-md-0">
+  </div>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    {% if rows == count %}
+      <a href="{% url 'update_order' %}" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
+          Submit
+      </a>
+      {% if redirect == 1 %}
+      <script type="text/javascript">   
+        function Redirect() 
+        {  
+          window.location.href = "{{ redirect_url }}";
+        } 
+        alert("Successfully updated data to {{ update_date }}\nYou will be redirected to Orders"); 
+        setTimeout('Redirect()', 100);   
+      </script>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+<!--
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="file" name="myfile">
     <button type="submit">Upload</button>
+    
   </form>
 
   {% if count %}
-    <!--<p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>-->
-    <p>File successfully uploaded at: {{ count }}</p>
+    
+    <p>{{uploaded_file_name}} successfully uploaded with {{ count }} rows of data</p>
+   
     <script type="text/javascript">   
       function Redirect() 
       {  
@@ -20,7 +79,52 @@
       document.write("You will be redirected to a new page in 3 seconds"); 
       setTimeout('Redirect()', 3000);   
     </script>
+    
+ 
+    
   {% endif %}
-  
+  -->
   <!--<p><a href="{% url 'home' %}">Return to home</a></p>-->
 {% endblock %}
+
+{% block javascripts %}
+<!--<script type="text/javascript">
+  var button=document.getElementById('upload');
+  button.style.visibility = 'hidden';
+
+  $('#myfile').on('change', function(){
+    if($(this).val() !== ""){
+        
+    }
+  });
+  
+    
+</script>-->
+<script type="text/javascript">
+  // var button=document.getElementById('upload1');
+  // button.style.visibility = 'hidden';
+  $(document).ready(function() {
+    {%for getdata,myfileid,uploadid,status,fs_Str,fe_Str in task%}
+    {% if status == '完成' %}
+      $('#{{uploadid}}').hide();
+      $('#{{myfileid}}').hide();
+    {% else %}
+      $('#{{uploadid}}').hide();
+    {% endif %}
+    
+    $('#{{myfileid}}').change(function () {
+          if($(this).val().split('\\').pop().substring(10,18)=={{fs_Str}} && $(this).val().split('\\').pop().substring(19,27)=={{fe_Str}})
+          {
+            
+            $('#{{uploadid}}').show();
+          }
+          else
+          {
+            alert('Please uplaod file with right start date and end date!')
+            $('#{{uploadid}}').hide();
+          }
+      });
+      {% endfor %}
+  });
+</script>
+{% endblock javascripts %}

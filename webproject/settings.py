@@ -27,18 +27,19 @@ TEMPLATE_DIR = os.path.join(os.path.join(BASE_DIR, "mainapp"), "templates")  # R
 SECRET_KEY = 'j4t8b-htj3%e0vi!eazyysx%tch$w3#u=*@c$3njqc9&!j!x9r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-
+"""
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost','13.113.232.249']
+ALLOWED_HOSTS = ['127.0.0.1','localhost','13.113.232.249','18.176.78.127']
 """
 DEBUG = True
 
-ALLOWED_HOSTS = []
-"""
+ALLOWED_HOSTS = ['18.176.78.127','127.0.0.1']
+
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
     'mainapp',
     'django.contrib.admin',
     'django.contrib.auth',
