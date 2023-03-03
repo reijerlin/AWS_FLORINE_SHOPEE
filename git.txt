@@ -1,0 +1,20 @@
+git remote -v
+# View existing remotes
+# origin  https://github.com/user/repo.git (fetch)
+# origin  https://github.com/user/repo.git (push)
+
+git remote set-url origin https://github.com/user/repo2.git
+# Change the 'origin' remote's URL
+
+git remote -v
+# Verify new remote URL
+# origin  https://github.com/user/repo2.git (fetch)
+# origin  https://github.com/user/repo2.git (push)
+
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/reijerlin/PeopleSoft.git
+git push -u origin main
+git push -f origin main
