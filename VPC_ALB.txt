@@ -1,0 +1,14 @@
+1.Create VPC
+2.Create 2 PubSub and 2 PriSub 
+3.Create Ineternet Gateway
+4.Create NAT GateWay in Pub1
+5.Edit Route for Main RouteTable (+igw)
+6.ADD Subnet Associations for 2 PubSub in Main RouteTable
+7.Create RouteTable for NAT
+8.Edit Route for NAT RouteTable (+nat)
+9.ADD Subnet Associations for 2 PriSub in NAT RouteTable
+10.Create 2 Ec2 in PriSub
+11.Create ALB SET AZ for PubSub
+12.Create ALB SG Inbound CustomTCP port80 0.0.0.0
+13.Create Target Group
+14.Edit instance Inbound CustomTCP port80 ALBSG
