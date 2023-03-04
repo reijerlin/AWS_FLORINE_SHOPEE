@@ -45,6 +45,14 @@ import json
 from datetime import date
 from dateutil import relativedelta
 from subprocess import run,PIPE
+
+global mydb 
+mydb = mysql.connector.connect(
+            host="54.150.254.70",
+            user="Eric",
+            password="1qaz@WSX",
+            database="DEV"
+            )
 # Create your views here.
 class ALLORDERSViewSet(viewsets.ModelViewSet):
     queryset = ALLORDERS.objects.all()
@@ -284,12 +292,12 @@ def simple_upload(request):
     username = None
     if request.user.is_authenticated:
         username = request.user.username
-    mydb = mysql.connector.connect(
-            host="ec2-54-64-213-252.ap-northeast-1.compute.amazonaws.com",
-            user="Eric",
-            password="1qaz@WSX",
-            database="DEV"
-            )
+    # mydb = mysql.connector.connect(
+    #         host="54.150.254.70",
+    #         user="Eric",
+    #         password="1qaz@WSX",
+    #         database="DEV"
+    #         )
      
     mycursor = mydb.cursor()
 
@@ -428,12 +436,12 @@ def update_order(request):
     username = None
     if request.user.is_authenticated:
         username = request.user.username
-    mydb = mysql.connector.connect(
-            host="ec2-54-64-213-252.ap-northeast-1.compute.amazonaws.com",
-            user="Eric",
-            password="1qaz@WSX",
-            database="DEV"
-            )
+    # mydb = mysql.connector.connect(
+    #         host="54.150.254.70",
+    #         user="Eric",
+    #         password="1qaz@WSX",
+    #         database="DEV"
+    #         )
      
     mycursor = mydb.cursor()
     deletesql = "delete from ORDERS where USERNAME='"+username+"'"+" and EFFDT>='"+delete_key+"'"
@@ -486,12 +494,12 @@ def cost(request):
         row=row+1
     #print(ADDLOCK)
     if len(vals)>0:
-        mydb = mysql.connector.connect(
-                host="ec2-54-64-213-252.ap-northeast-1.compute.amazonaws.com",
-                user="Eric",
-                password="1qaz@WSX",
-                database="DEV"
-                )
+        # mydb = mysql.connector.connect(
+        #         host="54.150.254.70",
+        #         user="Eric",
+        #         password="1qaz@WSX",
+        #         database="DEV"
+        #         )
         sql = "INSERT INTO COST (USERNAME,YYYYMM,COST) VALUES (%s,%s, %s)"
         mycursor = mydb.cursor()
         mycursor.executemany(sql, vals)

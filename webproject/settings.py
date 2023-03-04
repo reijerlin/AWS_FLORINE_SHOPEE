@@ -15,7 +15,8 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOGIN_REDIRECT_URL = "home"  # Route defined in home/urls.py
-LOGOUT_REDIRECT_URL = "home"  # Route defined in home/urls.py
+#LOGOUT_REDIRECT_URL = "home"  # Route defined in home/urls.py
+LOGOUT_REDIRECT_URL = "login"  # Route defined in home/urls.py
 TEMPLATE_DIR = os.path.join(os.path.join(BASE_DIR, "mainapp"), "templates")  # ROOT dir for templates
 
 
@@ -33,7 +34,7 @@ ALLOWED_HOSTS = ['127.0.0.1','localhost','13.113.232.249','18.176.78.127']
 """
 DEBUG = True
 
-ALLOWED_HOSTS = ['18.176.78.127','127.0.0.1','ec2-54-199-63-158.ap-northeast-1.compute.amazonaws.com']
+ALLOWED_HOSTS = ['www.florine20.link','18.176.78.127','127.0.0.1','ec2-43-207-229-50.ap-northeast-1.compute.amazonaws.com']
 
 # Application definition
 
@@ -93,7 +94,7 @@ DATABASES = {
         'NAME': 'DEV',
         'USER': 'Eric',
         'PASSWORD': '1qaz@WSX',
-        'HOST': 'ec2-54-250-193-50.ap-northeast-1.compute.amazonaws.com',
+        'HOST': '54.150.254.70',
         'PORT': '3306' ,
         'OPTIONS':{'charset':'utf8mb4'},
     }
