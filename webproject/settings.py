@@ -30,11 +30,11 @@ SECRET_KEY = 'j4t8b-htj3%e0vi!eazyysx%tch$w3#u=*@c$3njqc9&!j!x9r'
 """
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost','13.113.232.249','18.176.78.127']
+ALLOWED_HOSTS = ['127.0.0.1','localhost']
 """
 DEBUG = True
 
-ALLOWED_HOSTS = ['www.florine20.link','18.176.78.127','127.0.0.1','ec2-43-207-229-50.ap-northeast-1.compute.amazonaws.com']
+ALLOWED_HOSTS = ['www.florine20.link','127.0.0.1','ec2-43-207-229-50.ap-northeast-1.compute.amazonaws.com']
 
 # Application definition
 
@@ -91,7 +91,7 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.mysql', 
-        'NAME': 'DEV',
+        'NAME': 'PRD',
         'USER': 'Eric',
         'PASSWORD': '1qaz@WSX',
         'HOST': '54.150.254.70',
@@ -141,7 +141,7 @@ STATIC_URL = '/static/'
 #STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 #Add this in your settings.py file:
 STATICFILES_DIRS = [
-    BASE_DIR + '\static'
+    BASE_DIR + '/static'
 ]
 
 MEDIA_URL = '/media/'

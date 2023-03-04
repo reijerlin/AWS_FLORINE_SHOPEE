@@ -1,4 +1,4 @@
-from asyncio.windows_events import NULL
+#from asyncio.windows_events import NULL
 from django.shortcuts import render, redirect
 # from mainapp.forms import DataForm
 from mainapp.models import HotSales
@@ -51,14 +51,14 @@ mydb = mysql.connector.connect(
             host="54.150.254.70",
             user="Eric",
             password="1qaz@WSX",
-            database="DEV"
+            database="PRD"
             )
 # Create your views here.
 class ALLORDERSViewSet(viewsets.ModelViewSet):
     queryset = ALLORDERS.objects.all()
     serializer_class = ALLORDERSSerializer
 
-@login_required(login_url="/login/")
+@login_required(redirect_field_name=None,login_url="/login/")
 def index(request):
     username = None
     if request.user.is_authenticated:
@@ -158,14 +158,14 @@ def index(request):
     numLASTYYYYMM=(abc.year-1)*100+abc.month  
     numLASTSixBFYYYYMM=  numLASTYYYYMM-6
     chart2PROFITSQLstr="select YYYYMM,NUMYYYYMM,PROFIT from ALL_PROFIT_VW where USERNAME='"+username+"' and NUMYYYYMM>="
-    print(numLASTYYYYMM)
+    
     
 
     ThisSixBFPROFITSQLstr=chart2PROFITSQLstr+str(numSixBFYYYYMM)+" and NUMYYYYMM<"+str(numTHISYYYYMM)
     LastSixBFPROFITSQLstr=chart2PROFITSQLstr+str(numLASTSixBFYYYYMM) +" and NUMYYYYMM<"+str(numLASTYYYYMM)
     Chart2Result_This = ALL_PROFIT_VW.objects.raw(ThisSixBFPROFITSQLstr)
     Chart2Result_Last = ALL_PROFIT_VW.objects.raw(LastSixBFPROFITSQLstr)
-    print(ThisSixBFPROFITSQLstr)
+   
 
     Chart2Data_This=[]
     Chart2Data_Last=[]
@@ -302,9 +302,9 @@ def simple_upload(request):
     mycursor = mydb.cursor()
 
     count= request.session.get('count')
-    print(count)
+  
     if count==0:
-        print('start')
+    
         #GET UploadFromYYYYMMDD
         UPLYYYYMMDDsql="SELECT substring(MIN(EFFDT),1,10) as YYYYMMDD FROM orders where STATUS not in ('完成','不成立')"
         UPLYYYYMMDD=GETYYYYMMDD.objects.raw(UPLYYYYMMDDsql)[0].YYYYMMDD
@@ -411,8 +411,7 @@ def simple_upload(request):
         count=count+1
         request.session['count'] = count
         request.session['task'] = task
-        print(task)
-        print(count)
+   
         return render(request, 'home/simple_upload.html', {
             # 'uploaded_file_url': '/orders',
             # 'uploaded_file_name': myfile.name,
@@ -431,7 +430,7 @@ def update_order(request):
     delete_key=delete_key_str[0:4]+'-'+delete_key_str[4:6]+'-'+delete_key_str[6:]
     update_date_str=str(task[-1][5])
     update_date=update_date_str[0:4]+'-'+update_date_str[4:6]+'-'+update_date_str[6:]
-    print(delete_key)
+ 
     
     username = None
     if request.user.is_authenticated:
@@ -486,13 +485,13 @@ def cost(request):
         vals.append([username,start_date.strftime('%Y-%m-%d')[:7],0])
         start_date=(datetime.date((start_date+relativedelta.relativedelta(months=1)).year, (start_date+relativedelta.relativedelta(months=1)).month, 1))
  
-    #print(vals)
+
     for u,y,c in vals:
         costid="cost"+str(row)
         unlockid="unlock"+str(row)
         ADDLOCK.insert(0, [y,c,costid,unlockid])
         row=row+1
-    #print(ADDLOCK)
+
     if len(vals)>0:
         # mydb = mysql.connector.connect(
         #         host="54.150.254.70",
@@ -514,7 +513,7 @@ def cost(request):
             yyyymm=request.POST.get(str(ADDLOCK[i][0]))
             cost=request.POST.get(str(ADDLOCK[i][2]))
             ADDLOCK[i][1]=int(cost)
-            print(yyyymm+" "+cost)
+     
             COST.objects.filter(USERNAME=username, YYYYMM=yyyymm).update(COST=cost)
     #     #cost_details=COST(USERNAME=username,YYYYMM= yyyymm,COST = cost)
     #         #defaults = {'COST': 0}
@@ -526,7 +525,7 @@ def cost(request):
             #     setattr(obj, key, value)
             #obj.save()
             # except COST.DoesNotExist:
-            #     print("found")
+            #    
             #     new_values = {'USERNAME': username, 'YYYYMM': yyyymm,'COST':cost}
             #     new_values.update(defaults)
             #     obj = COST(**new_values)
@@ -537,7 +536,7 @@ def cost(request):
         defaults={'COST': 0},)
         cost_details.save()
         """
-        print(ADDLOCK)
+
         redirect=1
         request.session['ADDLOCK'] = ADDLOCK
         return render(request, 'home/cost.html',
@@ -609,14 +608,14 @@ def cost(request):
 #                     temp.append(text)
 #                 ob.writerow(temp)   
     
-#     #print("Hello World!")
+
 #     #context = {'segment': 'index'}
 
 #     #html_template = loader.get_template('home/dashboard.html')
 #     #return HttpResponse(html_template.render(context, request))
 #     #out=run(sys.executable,['D:\\Eric\\AWS\\AWS_FLORINE\\AWS_FLORINE_DJ\\apps\home\\function.py'],shell=False,stdout=PIPE)
 #     #out="HI"
-#     #print(out)
+# 
 
 #     return render(request,'home/dashboard.html')
 

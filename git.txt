@@ -15,6 +15,15 @@ git init
 git add README.md
 git commit -m "first commit"
 git branch -M main
-git remote add origin https://github.com/reijerlin/PeopleSoft.git
+git remote add origin https://github.com/reijerlin/AWS_FLORINE_SHOPEE.git
 git push -u origin main
 git push -f origin main
+
+--------------------------------------------------------------------------------------------------
+
+git add .
+git commit -m "first commit"
+git push -u origin main
+
+
+git pull origin main
