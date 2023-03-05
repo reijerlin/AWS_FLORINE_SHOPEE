@@ -34,7 +34,7 @@ ALLOWED_HOSTS = ['127.0.0.1','localhost']
 """
 DEBUG = True
 
-ALLOWED_HOSTS = ['www.florine20.link','127.0.0.1','ec2-43-207-229-50.ap-northeast-1.compute.amazonaws.com']
+ALLOWED_HOSTS = ['www.florine20.link','127.0.0.1','ec2-13-115-234-16.ap-northeast-1.compute.amazonaws.com']
 
 # Application definition
 
