@@ -11,6 +11,7 @@ from mainapp.models import SUM_TOTAL_PROFIT
 from mainapp.models import GETYYYYMM
 from mainapp.models import GETYYYYMMDD
 from mainapp.models import ALLORDERS
+from mainapp.models import TODO
 from django.shortcuts import render
 
 # Create your views here.
@@ -25,9 +26,6 @@ from django.db import connection
 # Create your views here.
 from mainapp.serializers import ALLORDERSSerializer
 from rest_framework import viewsets
-
-
-
 
 import mysql.connector
 import pandas as pd
@@ -51,7 +49,7 @@ mydb = mysql.connector.connect(
             host="54.150.254.70",
             user="Eric",
             password="1qaz@WSX",
-            database="PRD"
+            database="DEV"
             )
 # Create your views here.
 class ALLORDERSViewSet(viewsets.ModelViewSet):
@@ -242,7 +240,7 @@ def orders(request):
         if username=='Demo':
             username='florine__20'
             demo=True
-    ALLORDERSstr=  "SELECT ORDER_ID,EFFDT,STATUS,COMMODITY_NM,SHIIPPING_CODE,SHIPPING_TYPE,RECIPIENT_NAME,PRODUCT_GROSS FROM ALLORDERS Where USERNAME='"+username+"' order by EFFDT desc"
+    ALLORDERSstr=  "SELECT ORDER_ID,EFFDT,STATUS,MAIN_COMMODITY_NM,SUB_COMMODITY_NM,SHIIPPING_CODE,SHIPPING_TYPE,RECIPIENT_NAME,PRODUCT_GROSS FROM ALLORDERS Where USERNAME='"+username+"' order by EFFDT desc"
     ALLORDERSDATA=ALLORDERS.objects.raw(ALLORDERSstr)
     for i in range(len(ALLORDERSDATA)):
         ALLORDERSDATA[i].PRODUCT_GROSS=int(ALLORDERSDATA[i].PRODUCT_GROSS)
@@ -261,7 +259,7 @@ def orders(request):
     return render(request, 'home/orders.html',{'ALLORDERSDATA':page})
 
 @login_required(login_url="/login/")
-def todo(request):
+def pending(request):
     username = None
     demo=False
     if request.user.is_authenticated:
@@ -269,8 +267,8 @@ def todo(request):
         if username=='Demo':
             username='florine__20'
             demo=True
-    ALLORDERSstr=  "SELECT ORDER_ID,EFFDT,STATUS,COMMODITY_NM,SHIIPPING_CODE,SHIPPING_TYPE,RECIPIENT_NAME,PRODUCT_GROSS FROM ALLORDERS Where STATUS='待出貨' and USERNAME='"+username+"' order by EFFDT desc"
-    ALLORDERSDATA=ALLORDERS.objects.raw(ALLORDERSstr)
+    ALLORDERSstr=  "SELECT ARGENT,ORDER_ID,EFFDT,STATUS,MAIN_COMMODITY_NM,SUB_COMMODITY_NM,SHIIPPING_CODE,SHIPPING_TYPE,RECIPIENT_NAME,PRODUCT_GROSS FROM TODO Where USERNAME='"+username+"' order by EFFDT asc"
+    ALLORDERSDATA=TODO.objects.raw(ALLORDERSstr)
     for i in range(len(ALLORDERSDATA)):
         ALLORDERSDATA[i].PRODUCT_GROSS=int(ALLORDERSDATA[i].PRODUCT_GROSS)
         ALLORDERSDATA[i].EFFDT=ALLORDERSDATA[i].EFFDT.strftime('%Y-%m-%d %H:%M')
@@ -285,19 +283,77 @@ def todo(request):
         page=p.page(1)
     page=p.page(page_num)
     
-    return render(request, 'home/todo.html',{'ALLORDERSDATA':page})
+    return render(request, 'home/pending.html',{'ALLORDERSDATA':page})
+
+@login_required(login_url="/login/")
+def purchase(request):
+    username = None
+    demo=False
+    if request.user.is_authenticated:
+        username = request.user.username
+        if username=='Demo':
+            username='florine__20'
+            demo=True
+
+
+    ALLPURCHASESstr=  "SELECT ARGENT,ORDER_ID,EFFDT,MAIN_COMMODITY_NM,SUB_COMMODITY_NM,CALLITEM,SHIPTAOBAO FROM TODO Where USERNAME='"+username+"' order by EFFDT desc"
+    ALLPURCHASEDATA=TODO.objects.raw(ALLPURCHASESstr)
+    for i in range(len(ALLPURCHASEDATA)):
+        
+        ALLPURCHASEDATA[i].EFFDT=ALLPURCHASEDATA[i].EFFDT.strftime('%Y-%m-%d %H:%M')
+
+    
+    p=Paginator(ALLPURCHASEDATA,20)
+    page_num=request.GET.get('page',1)
+    try:
+        page=p.page(page_num)
+    except EmptyPage:
+        page=p.page(1)
+    page=p.page(page_num)
+
+    if request.method == 'POST':
+        argent_list= request.POST.getlist('argent')
+        call_list= request.POST.getlist('call')
+        ship_list= request.POST.getlist('ship')
+        print(argent_list)
+        print(call_list)
+        print(ship_list)
+        TODO.objects.filter(USERNAME=username).update(ARGENT=False)
+        TODO.objects.filter(USERNAME=username).update(CALLITEM=False)
+        TODO.objects.filter(USERNAME=username).update(SHIPTAOBAO=False)
+        for order_id in argent_list:
+            TODO.objects.filter(USERNAME=username, ORDER_ID=order_id).update(ARGENT=True)
+        for order_id in call_list:
+            TODO.objects.filter(USERNAME=username, ORDER_ID=order_id).update(CALLITEM=True)
+        for order_id in ship_list:
+            TODO.objects.filter(USERNAME=username, ORDER_ID=order_id).update(SHIPTAOBAO=True)
+    #,CALLITEM=callitem,SHIPTAOBAO=shiptaobao
+    
+        # for i in range(len(ALLPURCHASEDATA)): 
+        #     #ARGENT,ORDER_ID,EFFDT,MAIN_COMMODITY_NM,SUB_COMMODITY_NM,CALLITEM,SHIPTAOBAO
+        #     argent=request.POST.get(str(ALLPURCHASEDATA[i].ARGENT))
+        #     order_id=request.POST.get(str(ALLPURCHASEDATA[i].ORDER_ID))
+        #     effdt=request.POST.get(str(ALLPURCHASEDATA[i].EFFDT))
+        #     main_commodity_nm=request.POST.get(str(ALLPURCHASEDATA[i].MAIN_COMMODITY_NM))
+        #     sub_commodity_nm=request.POST.get(str(ALLPURCHASEDATA[i].SUB_COMMODITY_NM))
+        #     callitem=request.POST.get(str(ALLPURCHASEDATA[i].CALLITEM))
+        #     shiptaobao=request.POST.get(str(ALLPURCHASEDATA[i].SHIPTAOBAO))
+            
+        
+        #     TODO.objects.filter(USERNAME=username, ORDER_ID=order_id).update(ARGENT=argent,CALLITEM=callitem,SHIPTAOBAO=shiptaobao)
+        redirect=1
+        return render(request, 'home/purchase.html',
+        {'ALLORDERSDATA':page,'redirect':redirect,'redirect_url': '/pending'}
+        )
+    
+    return render(request, 'home/purchase.html',{'ALLORDERSDATA':page})
 
 @login_required(login_url="/login/")
 def simple_upload(request):
     username = None
     if request.user.is_authenticated:
         username = request.user.username
-    # mydb = mysql.connector.connect(
-    #         host="54.150.254.70",
-    #         user="Eric",
-    #         password="1qaz@WSX",
-    #         database="DEV"
-    #         )
+    
      
     mycursor = mydb.cursor()
 
@@ -435,12 +491,7 @@ def update_order(request):
     username = None
     if request.user.is_authenticated:
         username = request.user.username
-    # mydb = mysql.connector.connect(
-    #         host="54.150.254.70",
-    #         user="Eric",
-    #         password="1qaz@WSX",
-    #         database="DEV"
-    #         )
+
      
     mycursor = mydb.cursor()
     deletesql = "delete from ORDERS where USERNAME='"+username+"'"+" and EFFDT>='"+delete_key+"'"
@@ -450,6 +501,15 @@ def update_order(request):
     insertsql = "insert into ORDERS (select * from ORDERS_UPD_TMP)"
     mycursor.execute(insertsql)
     mydb.commit()
+
+    inserttodosql="insert into todo (select *,FALSE,FALSE,FALSE from allorders where status='待出貨' and USERNAME='"+username+"'"+" and ORDER_ID not in (select distinct order_id from todo where USERNAME='"+username+"'"+"))"
+    mycursor.execute(inserttodosql)
+    mydb.commit()
+
+    deletetodosql = "delete from todo where USERNAME='"+username+"'"+" and order_id not in (select distinct order_id from allorders where status='待出貨' and USERNAME='"+username+"'"+")"
+    mycursor.execute(deletetodosql)
+    mydb.commit()
+
     mycursor.close()
       
     finish=1
@@ -465,15 +525,22 @@ def cost(request):
         if username=='Demo':
             username='florine__20'
             demo=True
-    ALLCOSTSstr=  "SELECT USERNAME,YYYYMM,COST FROM COST Where USERNAME='"+username+"' order by YYYYMM desc"
+    ALLCOSTSstr=  "SELECT USERNAME,YYYYMM,TAOBAO,SHIP,TAX,OTHER,COST,COMMENT FROM COST Where USERNAME='"+username+"' order by YYYYMM desc"
     ALLCOSTDATA=COST.objects.raw(ALLCOSTSstr)
-    ADDLOCK=[]
-    row=1
+   
+    COST_DATA=[]
+   
     for i in range(len(ALLCOSTDATA)):
-        costid="cost"+str(i+1)
-        unlockid="unlock"+str(i+1)
-        ADDLOCK.append([ALLCOSTDATA[i].YYYYMM,ALLCOSTDATA[i].COST,costid,unlockid])
-        row=row+1
+        
+        COST_DATA.append(([ALLCOSTDATA[i].YYYYMM,
+        ALLCOSTDATA[i].TAOBAO,
+        ALLCOSTDATA[i].SHIP,
+        ALLCOSTDATA[i].TAX,
+        ALLCOSTDATA[i].OTHER,
+        ALLCOSTDATA[i].COST,
+        ALLCOSTDATA[i].COMMENT]))
+       
+    #check if new month
     UPLYYYYMMDD=str(ALLCOSTDATA[0].YYYYMM)+"-01"
     current_dateTime = datetime.datetime.now()
     current_dateTime=current_dateTime.strftime('%Y-%m-%d')
@@ -482,67 +549,46 @@ def cost(request):
     start_date=(datetime.date((start_date+relativedelta.relativedelta(months=1)).year, (start_date+relativedelta.relativedelta(months=1)).month, 1))
     vals=[]
     while start_date<end_date:
-        vals.append([username,start_date.strftime('%Y-%m-%d')[:7],0])
+        vals.append([username,start_date.strftime('%Y-%m-%d')[:7],0,0,0,0,0,""])
         start_date=(datetime.date((start_date+relativedelta.relativedelta(months=1)).year, (start_date+relativedelta.relativedelta(months=1)).month, 1))
- 
-
-    for u,y,c in vals:
-        costid="cost"+str(row)
-        unlockid="unlock"+str(row)
-        ADDLOCK.insert(0, [y,c,costid,unlockid])
-        row=row+1
-
-    if len(vals)>0:
-        # mydb = mysql.connector.connect(
-        #         host="54.150.254.70",
-        #         user="Eric",
-        #         password="1qaz@WSX",
-        #         database="DEV"
-        #         )
-        sql = "INSERT INTO COST (USERNAME,YYYYMM,COST) VALUES (%s,%s, %s)"
+    # if len(vals)>0:
+        sql = "INSERT INTO COST (USERNAME,YYYYMM,TAOBAO,SHIP,TAX,OTHER,COST,COMMENT) VALUES (%s,%s, %s,%s,%s, %s,%s)"
         mycursor = mydb.cursor()
         mycursor.executemany(sql, vals)
         mydb.commit()
         mycursor.close()
-    request.session['ADDLOCK'] = ADDLOCK
+    
+    for u,y,t,s,x,o,c,m in vals:
+      
+        COST_DATA.insert(0, [y,t,s,x,o,c,m])
+    
+    for i in range(len(COST_DATA)):
+        for j in range(len(COST_DATA[i])):
+            if COST_DATA[i][j]==None and COST_DATA[i][j]!=0:
+                COST_DATA[i][j]=''
+       
     if request.method == 'POST':
 
-        ADDLOCK= request.session.get('ADDLOCK')
-        for i in range(len(ADDLOCK)): 
-            
-            yyyymm=request.POST.get(str(ADDLOCK[i][0]))
-            cost=request.POST.get(str(ADDLOCK[i][2]))
-            ADDLOCK[i][1]=int(cost)
-     
-            COST.objects.filter(USERNAME=username, YYYYMM=yyyymm).update(COST=cost)
-    #     #cost_details=COST(USERNAME=username,YYYYMM= yyyymm,COST = cost)
-    #         #defaults = {'COST': 0}
-    #         #try:
         
-    #         
-            #setattr(obj, 'COST', ADDLOCK[i][1])
-            # for key, value in defaults.items():
-            #     setattr(obj, key, value)
-            #obj.save()
-            # except COST.DoesNotExist:
-            #    
-            #     new_values = {'USERNAME': username, 'YYYYMM': yyyymm,'COST':cost}
-            #     new_values.update(defaults)
-            #     obj = COST(**new_values)
-            #     obj.save()
-        """
-        cost_details,created=COST.objects.update_or_create(
-        USERNAME=username, YYYYMM=yyyymm,COST = cost,
-        defaults={'COST': 0},)
-        cost_details.save()
-        """
+        for i in range(len(COST_DATA)): 
+            
+            yyyymm=request.POST.get(str(COST_DATA[i][0]))
+            taobao=request.POST.get(str(COST_DATA[i][1]))
+            ship=request.POST.get(str(COST_DATA[i][2]))
+            tax=request.POST.get(str(COST_DATA[i][3]))
+            other=request.POST.get(str(COST_DATA[i][4]))
+            cost=request.POST.get(str(COST_DATA[i][5]))
+            comment=request.POST.get(str(COST_DATA[i][6]))
+            
+     
+            COST.objects.filter(USERNAME=username, YYYYMM=yyyymm).update(TAOBAO=taobao,SHIP=ship,TAX=tax,OTHER=other,COST=cost,COMMENT=comment)
 
         redirect=1
-        request.session['ADDLOCK'] = ADDLOCK
+      
         return render(request, 'home/cost.html',
-        {'ALLCOSTDATA':ADDLOCK,'redirect':redirect,'redirect_url': '/'}
+        {'COST_DATA':COST_DATA,'redirect':redirect,'redirect_url': '/'}
         )
     
     return render(request, 'home/cost.html',
-    {'ALLCOSTDATA':ADDLOCK,'redirect':redirect}
+    {'COST_DATA':COST_DATA,'redirect':redirect}
     )

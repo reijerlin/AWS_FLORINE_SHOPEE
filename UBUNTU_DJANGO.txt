@@ -1,4 +1,4 @@
-Step 1: Update Operating System
+﻿Step 1: Update Operating System
 Update your Ubuntu 22.04 operating system to the latest version with the following command:
 
 # apt update && sudo apt upgrade -y
@@ -242,3 +242,6 @@ Permission denied.
 Error code: 3
 Error message from server: Permission denied:
 sudo chown -R ubuntu:ubuntu .
+
+
+#a2dissite django.conf

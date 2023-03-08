@@ -1,0 +1,3 @@
+django-admin startproject django_app .
+python manage.py startapp authentication
+python manage.py startapp mainapp

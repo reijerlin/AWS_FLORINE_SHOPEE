@@ -29,7 +29,12 @@ class SUM_ACTUAL_PROFIT(models.Model):
 class COST(models.Model):
     USERNAME=models.CharField(max_length = 100,primary_key=True)
     YYYYMM=models.CharField(max_length = 10)
+    TAOBAO= models.IntegerField(default=0)
+    SHIP= models.IntegerField(default=0)
+    TAX= models.IntegerField(default=0)
+    OTHER= models.IntegerField(default=0)
     COST= models.IntegerField(default=0)
+    COMMENT=models.CharField(max_length = 50,default="")
 
     class Meta:
         db_table='COST'
@@ -80,7 +85,8 @@ class ALLORDERS(models.Model):
     ORDER_ID= models.CharField(max_length = 200,primary_key=True)
     EFFDT= models.DateTimeField(auto_now=True)
     STATUS= models.CharField(max_length = 20)
-    COMMODITY_NM= models.CharField(max_length = 512)
+    MAIN_COMMODITY_NM= models.CharField(max_length = 512)
+    SUB_COMMODITY_NM= models.CharField(max_length = 512)
     SHIIPPING_CODE=models.CharField(max_length = 30)
     SHIPPING_TYPE= models.CharField(max_length = 20)
     RECIPIENT_NAME= models.CharField(max_length = 20)
@@ -88,5 +94,23 @@ class ALLORDERS(models.Model):
 
     class Meta:
         db_table='ALLORDERS'
+
+class TODO(models.Model):
+    USERNAME=models.CharField(max_length = 100)
+    ORDER_ID= models.CharField(max_length = 200,primary_key=True)
+    EFFDT= models.DateTimeField(auto_now=True)
+    STATUS= models.CharField(max_length = 20)
+    MAIN_COMMODITY_NM= models.CharField(max_length = 512)
+    SUB_COMMODITY_NM= models.CharField(max_length = 512)
+    SHIIPPING_CODE=models.CharField(max_length = 30)
+    SHIPPING_TYPE= models.CharField(max_length = 20)
+    RECIPIENT_NAME= models.CharField(max_length = 20)
+    PRODUCT_GROSS= models.IntegerField(default=0)
+    ARGENT= models.BooleanField(default=False)
+    CALLITEM= models.BooleanField(default=False)
+    SHIPTAOBAO= models.BooleanField(default=False)
+
+    class Meta:
+        db_table='TODO'
  
    

@@ -34,7 +34,7 @@ ALLOWED_HOSTS = ['127.0.0.1','localhost']
 """
 DEBUG = True
 
-ALLOWED_HOSTS = ['www.florine20.link','florine20.link','127.0.0.1','ec2-13-115-234-16.ap-northeast-1.compute.amazonaws.com']
+ALLOWED_HOSTS = ['www.florine20.link','127.0.0.1','52.196.116.144']
 
 # Application definition
 
@@ -91,7 +91,7 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.mysql', 
-        'NAME': 'PRD',
+        'NAME': 'DEV',
         'USER': 'Eric',
         'PASSWORD': '1qaz@WSX',
         'HOST': '54.150.254.70',

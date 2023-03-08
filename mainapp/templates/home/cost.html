@@ -13,57 +13,27 @@
       <table class="table table-hover", id="COST">
           <thead>
             <tr>
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
-                <div class="d-block mb-4 mb-md-0">
-                  
-                  
-                </div>
-               
-                <div class="btn-toolbar mb-2 mb-md-0">
-                    <!-- <button class="btn btn-sm btn-gray-800 d-inline-flex align-items-center" id="unlock" onclick="lockFunction()">Unlock</button> -->
-            
-                </div>
-                <div class="btn-toolbar mb-2 mb-md-0">
-                    <!-- <a href="{% url 'simple_upload' %}" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
-                        Save
-                    </a> -->
-                    {% if request.user.username != 'Demo' %}
-                    <button class="btn btn-sm btn-gray-800 d-inline-flex align-items-center" type="submit">Save</button>
-                      {% if redirect == 1 %}
-                      <script type="text/javascript">   
-                        function Redirect() 
-                        {  
-                          //window.location.href = "{{ redirect_url }}";
-                        } 
-                        alert("Successfully saved data!"); 
-                        setTimeout('Redirect()', 100);   
-                      </script>
-                      {% endif %}
-                    {% endif %}
-                        
-                  
-                </div>
-            </div>
-            </tr>
-            <tr>
                 <!--<th class="border-gray-200">訂單編號</th>-->
-                <th class="border-gray-200">YYYY-MM</th>
-                <th class="border-gray-200"></th>
-                <th class="border-gray-200">Total Cost</th>
-                <th class="border-gray-200" style="display:none">Unlock</th>
-                
+                <th class="border-gray-200"   >YYYY-MM</th>
+                <th class="border-gray-200"  >TAOBAO</th>
+                <th class="border-gray-200"  >SHIP</th>
+                <th class="border-gray-200" >TAX</th>
+                <th class="border-gray-200"  >OTHER</th>
+                <th class="border-gray-200"  >Total Cost</th>
+
             </tr>
           </thead>
           <tbody>
             
-            {% for YYYYMM,COST,costid,unlockid in ALLCOSTDATA %}
+            {% for YYYYMM,TAOBAO,SHIP,TAX,OTHER,COST,COMMENT in COST_DATA %}
             <tr>
                 <td><span class="fw-normal" >{{YYYYMM}}</span></td>
-                <td><input type="text" class="fw-normal" name="{{ YYYYMM }}" value="{{ YYYYMM }}" style="display:none" /></td>
-                <td><input type="text" class="fw-normal" name="{{ costid }}" value="{{ COST }}" id="{{ costid }}"/></td>
-                <td><input type="checkbox" id="{{ unlockid }}" style="display:none" />
-                </td>
-               
+                <td><input type="text" class="fw-normal" style="border-top-style: hidden;border-right-style: hidden;border-left-style: hidden;border-bottom-style: hidden !important;"  value="{{ TAOBAO }}" disabled /></td>
+                <td><input type="text" class="fw-normal" style="border-top-style: hidden;border-right-style: hidden;border-left-style: hidden;border-bottom-style: hidden !important;"   value="{{ SHIP }}" disabled /></td>
+                <td><input type="text" class="fw-normal" style="border-top-style: hidden;border-right-style: hidden;border-left-style: hidden;border-bottom-style: hidden !important;"  value="{{ TAX }}" disabled /></td>
+                <td><input type="text" class="fw-normal" style="border-top-style: hidden;border-right-style: hidden;border-left-style: hidden;border-bottom-style: hidden !important;"   value="{{ OTHER }}" disabled /></td>
+                <td><input type="text" class="fw-normal" style="border-top-style: hidden;border-right-style: hidden;border-left-style: hidden;border-bottom-style: hidden !important;"   value="{{ COST }}" disabled /></td>
+
             </tr>
             {% endfor %}
           
@@ -85,7 +55,7 @@
         //{%for YYYYMM,COST,costid,unlockid in ALLCOSTDATA%}
         //$('#{{unlockid}}').hide();
         //$('#unlock2}').hide();
-        alert("Fi");
+      
         // if ($('#{{unlockid}}').is(":checked"))
         // {
         //     alert("Fi");

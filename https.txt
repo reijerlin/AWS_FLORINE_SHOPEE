@@ -1,0 +1,3 @@
+sudo apt install python3-certbot-apache
+sudo certbot --apache --domain www.florine20.link
+sudo certbot delete --cert-name florine20.link

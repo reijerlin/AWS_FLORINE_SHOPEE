@@ -20,7 +20,8 @@ urlpatterns = [
     path("", include("authentication.urls")), # Auth routes - login / register
     path('simple_upload',views.simple_upload,name='simple_upload'),
     path('orders',views.orders,name='orders'),
-    path('todo',views.todo,name='todo'),
+    path('pending',views.pending,name='pending'),
+    path('purchase',views.purchase,name='purchase'),
     path('update_order',views.update_order,name='update_order'),
     path('cost',views.cost,name='cost'),
     path('api/',include(router.urls))

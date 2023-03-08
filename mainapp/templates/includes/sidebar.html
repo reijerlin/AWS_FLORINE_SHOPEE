@@ -68,7 +68,7 @@
                   <span class="sidebar-text">Dashboard</span>
                 </a>
               </li>
-              <li class="nav-item {% if 'transactions' in segment %} active {% endif %}">
+              <li class="nav-item {% if 'orders' in segment %} active {% endif %}">
                 <a href="{% url 'orders' %}" class="nav-link">
                   <span class="sidebar-icon">
                     <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -81,15 +81,43 @@
                   <span class="sidebar-text">Order</span>
                 </a>
               </li>
-              <li class="nav-item {% if 'transactions' in segment %} active {% endif %}">
-                <a href="{% url 'todo' %}" class="nav-link">
+              <li class="nav-item {% if 'pending' in segment %} active {% endif %}">
+                <span
+                class="nav-link  collapsed  d-flex justify-content-between align-items-center"
+                data-bs-toggle="collapse" data-bs-target="#submenu-pages">
+                  <span>
+                    <span class="sidebar-icon">
+                      <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"></path><path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"></path></svg>
+                    </span> 
+                    <span class="sidebar-text">Todo</span>
+                  </span>
+                  <span class="link-arrow">
+                    <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                  </span>
+                </span>
+                <div class="multi-level collapse {% if 'page-' in segment %} show {% endif %} " role="list"
+                id="submenu-pages" aria-expanded="false">
+                <ul class="flex-column nav">
+                  <li class="nav-item">
+                    <a href="{% url 'pending' %}" class="nav-link">
+                      <span class="sidebar-text">Pending</span>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'purchase' %}" class="nav-link">
+                      <span class="sidebar-text">Purchase</span>
+                    </a>
+                  </li>
+                </ul>
+                </div><!--
+                <a href="{% url 'pending' %}" class="nav-link">
                   <span class="sidebar-icon">
                     <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"></path><path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"></path></svg>
                   </span>
                   <span class="sidebar-text">Todo</span>
-                </a>
+                </a>-->
               </li>
-              <li class="nav-item {% if 'transactions' in segment %} active {% endif %}">
+              <li class="nav-item {% if 'cost' in segment %} active {% endif %}">
                 <a href="{% url 'cost' %}" class="nav-link">
                   <span class="sidebar-icon">
                     <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -149,8 +177,8 @@
                     </li>
                   </ul>
                 </div>
-              </li>-->
-              <!--<li class="nav-item {% if 'page-' in segment %} active {% endif %}">
+              </li>
+              <li class="nav-item {% if 'page-' in segment %} active {% endif %}">
                 <span
                   class="nav-link  collapsed  d-flex justify-content-between align-items-center"
                   data-bs-toggle="collapse" data-bs-target="#submenu-pages">
