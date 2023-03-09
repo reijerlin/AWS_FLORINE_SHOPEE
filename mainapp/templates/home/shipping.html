@@ -13,46 +13,17 @@
         {% csrf_token %}
       <table class="table table-hover" id="Table1">
           <thead>
-            <tr>
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
-                    <div class="d-block mb-4 mb-md-0">
-                    </div>
-                   
-                    <div class="btn-toolbar mb-2 mb-md-0">
-                        <!-- <button class="btn btn-sm btn-gray-800 d-inline-flex align-items-center" id="unlock" onclick="lockFunction()">Unlock</button> -->
-                
-                    </div>
-                    <div class="btn-toolbar mb-2 mb-md-0">
-                        <!-- <a href="{% url 'simple_upload' %}" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
-                            Save
-                        </a> -->
-                        {% if request.user.username != 'Demo' %}
-                        <button class="btn btn-sm btn-gray-800 d-inline-flex align-items-center" type="submit">Save</button>
-                          {% if redirect == 1 %}
-                          <script type="text/javascript">   
-                            function Redirect() 
-                            {  
-                              window.location.href = "{{ redirect_url }}";
-                            } 
-                            alert("Successfully saved data!"); 
-                            setTimeout('Redirect()', 10);   
-                          </script>
-                          {% endif %}
-                        {% endif %}
-                            
-                      
-                    </div>
-                </div>
-              </tr>
+
               <tr>
-                    <th class="border-gray-200">急單</th> 
+                    <th class="border-gray-200">訂單狀態</th>
                     <th class="border-gray-200">訂單編號</th>
-                    <th class="border-gray-200">訂單成立日期</th>
+                    <th class="border-gray-200">寄送方式</th>
+                    <th class="border-gray-200">收件者</th>			
+                    <!-- <th class="border-gray-200">訂單成立日期</th> -->
                     <!--<th class="border-gray-200">訂單狀態</th>	 -->
                     <th class="border-gray-200">商品名稱</th> 
                     <th class="border-gray-200">商品尺寸</th> 
-                    <th class="border-gray-200">已叫貨</th>
-                    <th class="border-gray-200">廠商已出貨</th>					
+                    				
                     <!--<th class="border-gray-200">商品總價</th>-->  
               </tr>
           </thead>
@@ -60,17 +31,12 @@
             {%for getdata in ALLORDERSDATA%}
             <tr>
                
-                <!-- 
-                <td><span class="fw-normal">{{getdata.STATUS}}</span></td>-->
-                <td><input type="checkbox" onclick=GetSelected() id="argent" name="argent" value={{getdata.ORDER_ID}} {% if getdata.ARGENT == True %} checked{% endif %}></td>
+               
+                <td><span class="fw-normal">{{getdata.STATUS}}</span></td>
                 <td><span class="fw-normal">{{getdata.ORDER_ID}}</span></td>
-                <td><span class="fw-normal">{{getdata.EFFDT}}</span> </td>
-                <td><span class="fw-normal">{{getdata.MAIN_COMMODITY_NM}}</span></td>  
-                <td><span class="fw-normal">{{getdata.SUB_COMMODITY_NM}}</span></td>    
-                <td><input type="checkbox" id="call" name="call" value={{getdata.ORDER_ID}} {% if getdata.CALLITEM == True %} checked{% endif %}></td>
-                <td><input type="checkbox" id="ship" name="ship" value={{getdata.ORDER_ID}} {% if getdata.SHIPTAOBAO == True %} checked{% endif %}></td>        
-                <!--<td><span class="fw-bold">{{getdata.SHIIPPING_CODE}}</span></td>
-                 {% if getdata.SHIPPING_TYPE == '蝦皮店到店' %}
+                <!-- <td><span class="fw-normal">{{getdata.EFFDT}}</span> </td> -->
+                <!-- <td><span class="fw-bold">{{getdata.SHIIPPING_CODE}}</span></td> -->
+                {% if getdata.SHIPPING_TYPE == '蝦皮店到店' %}
                 <td><span class="fw-bold text-warning">{{getdata.SHIPPING_TYPE}}</span></td>
                 {% elif getdata.SHIPPING_TYPE == '萊爾富'  %}
                 <td><span class="fw-bold text-danger">{{getdata.SHIPPING_TYPE}}</span></td> 
@@ -81,10 +47,14 @@
                 {% elif getdata.SHIPPING_TYPE == 'OK Mart'  %}
                 <td><span class="fw-bold text-dark">{{getdata.SHIPPING_TYPE}}</span></td>
                 {% endif %}
-                
-                
-                <td><span class="fw-normal">{{getdata.RECIPIENT_NAME}}</span></td>
-                <td><span class="fw-normal">{{getdata.PRODUCT_GROSS}}</span></td> -->
+               
+               
+               <td><span class="fw-normal">{{getdata.RECIPIENT_NAME}}</span></td>
+                <td><span class="fw-normal">{{getdata.MAIN_COMMODITY_NM}}</span></td>  
+                <td><span class="fw-normal">{{getdata.SUB_COMMODITY_NM}}</span></td>    
+               
+
+                <!-- <td><span class="fw-normal">{{getdata.PRODUCT_GROSS}}</span></td> -->
                 <!--
                 <td>
                     <div class="btn-group">

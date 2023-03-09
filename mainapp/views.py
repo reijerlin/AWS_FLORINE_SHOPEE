@@ -267,26 +267,60 @@ def pending(request):
         if username=='Demo':
             username='florine__20'
             demo=True
-    ALLORDERSstr=  "SELECT ARGENT,ORDER_ID,EFFDT,STATUS,MAIN_COMMODITY_NM,SUB_COMMODITY_NM,SHIIPPING_CODE,SHIPPING_TYPE,RECIPIENT_NAME,PRODUCT_GROSS FROM TODO Where USERNAME='"+username+"' order by EFFDT asc"
+    ALLORDERSstr=  "SELECT ORDER_ID,EFFDT,STATUS,MAIN_COMMODITY_NM,SUB_COMMODITY_NM,SHIIPPING_CODE,SHIPPING_TYPE,RECIPIENT_NAME,PRODUCT_GROSS,CALLITEM,SHIPTAOBAO,ITEMARRIVED,DONE,COMMENT FROM TODO Where  STATUS='待出貨' and USERNAME='"+username+"' order by EFFDT asc"
     ALLORDERSDATA=TODO.objects.raw(ALLORDERSstr)
     for i in range(len(ALLORDERSDATA)):
         ALLORDERSDATA[i].PRODUCT_GROSS=int(ALLORDERSDATA[i].PRODUCT_GROSS)
         ALLORDERSDATA[i].EFFDT=ALLORDERSDATA[i].EFFDT.strftime('%Y-%m-%d %H:%M')
+        print(ALLORDERSDATA[i].COMMENT)
+        if ALLORDERSDATA[i].COMMENT==None:
+            ALLORDERSDATA[i].COMMENT=''
         if demo==True and len(ALLORDERSDATA[i].SHIIPPING_CODE)>0:
             ALLORDERSDATA[i].SHIIPPING_CODE='***' + ALLORDERSDATA[i].SHIIPPING_CODE[3:]
            
-    p=Paginator(ALLORDERSDATA,20)
-    page_num=request.GET.get('page',1)
-    try:
-        page=p.page(page_num)
-    except EmptyPage:
-        page=p.page(1)
-    page=p.page(page_num)
+    # p=Paginator(ALLORDERSDATA,20)
+    # page_num=request.GET.get('page',1)
+    # try:
+    #     page=p.page(page_num)
+    # except EmptyPage:
+    #     page=p.page(1)
+    # page=p.page(page_num)
+
+    if request.method == 'POST':
+        
+       
+        call_list= request.POST.getlist('call')
+        ship_list= request.POST.getlist('ship')
+        arrive_list= request.POST.getlist('arrive')
+        done_list= request.POST.getlist('done')
+        comment_list= request.POST.getlist('comment')
+        print(comment_list)
+        TODO.objects.filter(USERNAME=username).update(CALLITEM=False)
+        TODO.objects.filter(USERNAME=username).update(SHIPTAOBAO=False)
+        TODO.objects.filter(USERNAME=username).update(ITEMARRIVED=False)
+        TODO.objects.filter(USERNAME=username).update(DONE=False)
+        TODO.objects.filter(USERNAME=username).update(COMMENT='')
+        #TODO.objects.filter(USERNAME=username).update(DONE=False)
+        for order_id in call_list:
+            TODO.objects.filter(USERNAME=username, ORDER_ID=order_id).update(CALLITEM=True)
+        for order_id in ship_list:
+            TODO.objects.filter(USERNAME=username, ORDER_ID=order_id).update(SHIPTAOBAO=True)
+        for order_id in arrive_list:
+            TODO.objects.filter(USERNAME=username, ORDER_ID=order_id).update(ITEMARRIVED=True)
+        for order_id in done_list:
+            # TODO.objects.filter(USERNAME=username, ORDER_ID=order_id).update(DONE=True)
+            TODO.objects.filter(USERNAME=username, ORDER_ID=order_id).update(STATUS='已出貨')
+        for i in range(len(comment_list)):
+            TODO.objects.filter(USERNAME=username, ORDER_ID=ALLORDERSDATA[i].ORDER_ID).update(COMMENT=comment_list[i])
+        redirect=1
+        return render(request, 'home/pending.html',
+        {'ALLORDERSDATA':ALLORDERSDATA,'redirect':redirect,'redirect_url': '/pending'}
+        )
     
-    return render(request, 'home/pending.html',{'ALLORDERSDATA':page})
+    return render(request, 'home/pending.html',{'ALLORDERSDATA':ALLORDERSDATA})
 
 @login_required(login_url="/login/")
-def purchase(request):
+def shipping(request):
     username = None
     demo=False
     if request.user.is_authenticated:
@@ -296,57 +330,24 @@ def purchase(request):
             demo=True
 
 
-    ALLPURCHASESstr=  "SELECT ARGENT,ORDER_ID,EFFDT,MAIN_COMMODITY_NM,SUB_COMMODITY_NM,CALLITEM,SHIPTAOBAO FROM TODO Where USERNAME='"+username+"' order by EFFDT desc"
+    ALLPURCHASESstr=  "SELECT ORDER_ID,EFFDT,MAIN_COMMODITY_NM,SUB_COMMODITY_NM,CALLITEM,SHIPTAOBAO,ITEMARRIVED FROM TODO Where STATUS='已出貨' and USERNAME='"+username+"' order by EFFDT asc"
     ALLPURCHASEDATA=TODO.objects.raw(ALLPURCHASESstr)
     for i in range(len(ALLPURCHASEDATA)):
         
         ALLPURCHASEDATA[i].EFFDT=ALLPURCHASEDATA[i].EFFDT.strftime('%Y-%m-%d %H:%M')
 
     
-    p=Paginator(ALLPURCHASEDATA,20)
-    page_num=request.GET.get('page',1)
-    try:
-        page=p.page(page_num)
-    except EmptyPage:
-        page=p.page(1)
-    page=p.page(page_num)
+    # p=Paginator(ALLPURCHASEDATA,20)
+    # page_num=request.GET.get('page',1)
+    # try:
+    #     page=p.page(page_num)
+    # except EmptyPage:
+    #     page=p.page(1)
+    # page=p.page(page_num)
 
-    if request.method == 'POST':
-        argent_list= request.POST.getlist('argent')
-        call_list= request.POST.getlist('call')
-        ship_list= request.POST.getlist('ship')
-        print(argent_list)
-        print(call_list)
-        print(ship_list)
-        TODO.objects.filter(USERNAME=username).update(ARGENT=False)
-        TODO.objects.filter(USERNAME=username).update(CALLITEM=False)
-        TODO.objects.filter(USERNAME=username).update(SHIPTAOBAO=False)
-        for order_id in argent_list:
-            TODO.objects.filter(USERNAME=username, ORDER_ID=order_id).update(ARGENT=True)
-        for order_id in call_list:
-            TODO.objects.filter(USERNAME=username, ORDER_ID=order_id).update(CALLITEM=True)
-        for order_id in ship_list:
-            TODO.objects.filter(USERNAME=username, ORDER_ID=order_id).update(SHIPTAOBAO=True)
-    #,CALLITEM=callitem,SHIPTAOBAO=shiptaobao
+   
     
-        # for i in range(len(ALLPURCHASEDATA)): 
-        #     #ARGENT,ORDER_ID,EFFDT,MAIN_COMMODITY_NM,SUB_COMMODITY_NM,CALLITEM,SHIPTAOBAO
-        #     argent=request.POST.get(str(ALLPURCHASEDATA[i].ARGENT))
-        #     order_id=request.POST.get(str(ALLPURCHASEDATA[i].ORDER_ID))
-        #     effdt=request.POST.get(str(ALLPURCHASEDATA[i].EFFDT))
-        #     main_commodity_nm=request.POST.get(str(ALLPURCHASEDATA[i].MAIN_COMMODITY_NM))
-        #     sub_commodity_nm=request.POST.get(str(ALLPURCHASEDATA[i].SUB_COMMODITY_NM))
-        #     callitem=request.POST.get(str(ALLPURCHASEDATA[i].CALLITEM))
-        #     shiptaobao=request.POST.get(str(ALLPURCHASEDATA[i].SHIPTAOBAO))
-            
-        
-        #     TODO.objects.filter(USERNAME=username, ORDER_ID=order_id).update(ARGENT=argent,CALLITEM=callitem,SHIPTAOBAO=shiptaobao)
-        redirect=1
-        return render(request, 'home/purchase.html',
-        {'ALLORDERSDATA':page,'redirect':redirect,'redirect_url': '/pending'}
-        )
-    
-    return render(request, 'home/purchase.html',{'ALLORDERSDATA':page})
+    return render(request, 'home/shipping.html',{'ALLORDERSDATA':ALLPURCHASEDATA})
 
 @login_required(login_url="/login/")
 def simple_upload(request):
@@ -447,7 +448,7 @@ def simple_upload(request):
                     text=str(text)
                     
                     if (i==43 or i==45 or i==46 or i==47) and len(text)!=16:
-                        text=NULL
+                        text=None
                     temp.append(text)
                     
         
@@ -502,7 +503,7 @@ def update_order(request):
     mycursor.execute(insertsql)
     mydb.commit()
 
-    inserttodosql="insert into todo (select *,FALSE,FALSE,FALSE from allorders where status='待出貨' and USERNAME='"+username+"'"+" and ORDER_ID not in (select distinct order_id from todo where USERNAME='"+username+"'"+"))"
+    inserttodosql="insert into todo (select *,FALSE,FALSE,FALSE,FALSE,'' from allorders where status='待出貨' and USERNAME='"+username+"'"+" and ORDER_ID not in (select distinct order_id from todo where USERNAME='"+username+"'"+"))"
     mycursor.execute(inserttodosql)
     mydb.commit()
 

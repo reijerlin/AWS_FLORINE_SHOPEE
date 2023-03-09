@@ -106,10 +106,11 @@ class TODO(models.Model):
     SHIPPING_TYPE= models.CharField(max_length = 20)
     RECIPIENT_NAME= models.CharField(max_length = 20)
     PRODUCT_GROSS= models.IntegerField(default=0)
-    ARGENT= models.BooleanField(default=False)
     CALLITEM= models.BooleanField(default=False)
     SHIPTAOBAO= models.BooleanField(default=False)
-
+    ITEMARRIVED= models.BooleanField(default=False)
+    DONE= models.BooleanField(default=False)
+    COMMENT= models.CharField(max_length = 20)
     class Meta:
         db_table='TODO'
  
