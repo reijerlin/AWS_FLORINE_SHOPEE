@@ -6,7 +6,7 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-
+  
   <div class="card card-body border-0 shadow table-wrapper table-responsive">       
     <form method="post">
     {% csrf_token %}
@@ -15,24 +15,24 @@
             <tr>
                 <!--<th class="border-gray-200">訂單編號</th>-->
                 <th class="border-gray-200"   >YYYY-MM</th>
-                <th class="border-gray-200"  >TAOBAO</th>
-                <th class="border-gray-200"  >SHIP</th>
-                <th class="border-gray-200" >TAX</th>
-                <th class="border-gray-200"  >OTHER</th>
-                <th class="border-gray-200"  >Total Cost</th>
+                <th class="border-gray-200"   style="text-align: right !important;";>TAOBAO</th>
+                <th class="border-gray-200"   style="text-align: right !important;";>SHIPPING</th>
+                <th class="border-gray-200"  style="text-align: right !important;";>TAX</th>
+                <th class="border-gray-200"   style="text-align: right !important;";>OTHERS</th>
+                <th class="border-gray-200" style="text-align: right !important;"; >Total Cost</th>
 
             </tr>
           </thead>
           <tbody>
             
-            {% for YYYYMM,TAOBAO,SHIP,TAX,OTHER,COST,COMMENT in COST_DATA %}
+            {% for getdata in COST_DATA %}
             <tr>
-                <td><span class="fw-normal" >{{YYYYMM}}</span></td>
-                <td><input type="text" class="fw-normal" style="border-top-style: hidden;border-right-style: hidden;border-left-style: hidden;border-bottom-style: hidden !important;"  value="{{ TAOBAO }}" disabled /></td>
-                <td><input type="text" class="fw-normal" style="border-top-style: hidden;border-right-style: hidden;border-left-style: hidden;border-bottom-style: hidden !important;"   value="{{ SHIP }}" disabled /></td>
-                <td><input type="text" class="fw-normal" style="border-top-style: hidden;border-right-style: hidden;border-left-style: hidden;border-bottom-style: hidden !important;"  value="{{ TAX }}" disabled /></td>
-                <td><input type="text" class="fw-normal" style="border-top-style: hidden;border-right-style: hidden;border-left-style: hidden;border-bottom-style: hidden !important;"   value="{{ OTHER }}" disabled /></td>
-                <td><input type="text" class="fw-normal" style="border-top-style: hidden;border-right-style: hidden;border-left-style: hidden;border-bottom-style: hidden !important;"   value="{{ COST }}" disabled /></td>
+                <td><span class="fw-normal" ><a href="cost/{{ getdata.YYYYMM }}">{{getdata.YYYYMM}}</a></span></td>
+                <td style="text-align: right !important;";><span class="fw-normal" >{{getdata.TAOBAO}}</span></td>
+                <td style="text-align: right !important;";><span class="fw-normal" >{{getdata.SHIP}}</span></td>
+                <td style="text-align: right !important;";><span class="fw-normal" >{{getdata.TAX}}</span></td>
+                <td style="text-align: right !important;";><span class="fw-normal" >{{getdata.OTHER}}</span></td>
+                <td style="text-align: right !important;";><span class="fw-normal" >{{getdata.COST}}</span></td>
 
             </tr>
             {% endfor %}
@@ -48,27 +48,5 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js" type="text/javascript">
 
-    
-    $(document).ready(function() {
-        //{%for YYYYMM,COST,costid,unlockid in ALLCOSTDATA%}
-        //$('#{{unlockid}}').hide();
-        //$('#unlock2}').hide();
-      
-        // if ($('#{{unlockid}}').is(":checked"))
-        // {
-        //     alert("Fi");
-        //     // $('#{{costid}}').prop('readonly', false);
-        // }
-        // else{
-        //     $('#{{costid}}').prop('readonly', true);;
-        // }
-        // $('#{{unlockid}}').click(function() {
-        //             //$('#textbox2').val($(this).is(':checked'));
-        //             alert("Fi");
-        //         });
-        //{% endfor %}
-    });
-</script>
 {% endblock javascripts %}

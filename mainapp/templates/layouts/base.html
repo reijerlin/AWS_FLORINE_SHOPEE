@@ -42,10 +42,9 @@
 <link type="text/css" href="{% static 'assets/css/volt.css' %}" rel="stylesheet">
 
 
-
 <!-- Specific Page JS goes HERE  -->    
 {% block stylesheets %}
-<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
 {% endblock stylesheets %}
 
 </head>
@@ -67,7 +66,8 @@
   {% include 'includes/scripts.html' %}
     
   <!-- Specific Page JS goes HERE  -->
-  {% block javascripts %}{% endblock javascripts %}  
+  {% block javascripts %}
+  {% endblock javascripts %}  
       
 </body>
 </html>

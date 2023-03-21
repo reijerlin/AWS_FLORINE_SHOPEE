@@ -2,19 +2,25 @@
 from django.shortcuts import render, redirect
 # from mainapp.forms import DataForm
 from mainapp.models import HotSales
-from mainapp.models import SUM_ACTUAL_PROFIT
-from mainapp.models import COST
-from mainapp.models import TOTAL_ORDERS
+from mainapp.models import ACTUAL_PROFIT
+
+from mainapp.models import COST_SUM
+from mainapp.models import COST_DETAIL
+
 from mainapp.models import MONTH_REVENUE
 from mainapp.models import ALL_PROFIT_VW
-from mainapp.models import SUM_TOTAL_PROFIT
+
 from mainapp.models import GETYYYYMM
 from mainapp.models import GETYYYYMMDD
 from mainapp.models import ALLORDERS
 from mainapp.models import TODO
 from django.shortcuts import render
 
+from django.template.loader import render_to_string
+from django.http import JsonResponse
+
 # Create your views here.
+from django.db.models import Sum
 from django import template
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
@@ -44,12 +50,30 @@ from datetime import date
 from dateutil import relativedelta
 from subprocess import run,PIPE
 
+from django.urls import reverse_lazy
+from bootstrap_modal_forms.generic import (
+    BSModalLoginView,
+    BSModalFormView,
+    BSModalCreateView,
+    BSModalUpdateView,
+    BSModalReadView,
+    BSModalDeleteView
+)
+from django.views import generic
+from .forms import (
+    BookModelForm,
+    CustomUserCreationForm,
+    CustomAuthenticationForm,
+    #BookFilterForm
+)
+
+
 global mydb 
 mydb = mysql.connector.connect(
             host="54.150.254.70",
             user="Eric",
             password="1qaz@WSX",
-            database="DEV"
+            database="dev"
             )
 # Create your views here.
 class ALLORDERSViewSet(viewsets.ModelViewSet):
@@ -65,7 +89,7 @@ def index(request):
             username='florine__20'
             
     ORDERMNMAXSQLstr="select substring(MAX(EFFDT),1,4)*100+substring(MAX(EFFDT),6,2) as YYYYMM from orders Where USERNAME='"+username+"'"
-    COSTMNMAXSQLstr="select substring(MAX(YYYYMM),1,4)*100+substring(MAX(YYYYMM),6,2) as YYYYMM from cost Where USERNAME='"+username+"'"
+    COSTMNMAXSQLstr="select substring(MAX(YYYYMM),1,4)*100+substring(MAX(YYYYMM),6,2) as YYYYMM from COST_SUM Where USERNAME='"+username+"'"
     
     ORDERMNMAX=GETYYYYMM.objects.raw(ORDERMNMAXSQLstr)[0].YYYYMM
     COSTMNMAX=GETYYYYMM.objects.raw(COSTMNMAXSQLstr)[0].YYYYMM
@@ -74,76 +98,82 @@ def index(request):
     YYYY=int((YYYYMM-MM)/100)
     
     Today = date.today() 
-    Todayyyymm=str(Today.year)+'-'+str(Today.month)
+    if len(str(Today.month))==2:
+        Todayyyymm=str(Today.year)+'-'+str(Today.month)
+    else:
+        Todayyyymm=str(Today.year)+'-0'+str(Today.month)
+    
+    
     abc = datetime.date(YYYY, MM, 1)
+   
     #abc = datetime.date(2022, 10, 31)
-    THISYYYYMM=str(abc.year)+'-'+str(abc.month)
+    if len(str(abc.month))==2:
+        THISYYYYMM=str(abc.year)+'-'+str(abc.month)
+    else:
+        THISYYYYMM=str(abc.year)+'-0'+str(abc.month)
     THISYYYY=str(abc.year)
-    LASTYYY=str(abc.year-1)
-    month, year = (abc.month-1, abc.year) if abc.month != 1 else (12, abc.year-1)
-    month2, year2 = (abc.month-2, abc.year) if abc.month != 1 else (12, abc.year-1)
+    LASTYYYY=str(abc.year-1)
+    month, year = (abc.month, abc.year) if abc.month != 1 else (12, abc.year-1)
+    month2, year2 = (abc.month-1, abc.year) if abc.month != 1 else (12, abc.year-1)
+    
     pre_month = abc.replace(day=1, month=month, year=year)
     pre2_month = abc.replace(day=1, month=month2, year=year2)
+    
     pre_month=str(pre_month)[0:7]
     pre2_month=str(pre2_month)[0:7]
     #GET HOTSALES
     #resultdisplay=HotSales.objects.all()
     HOTSALESSQLstr=  "select D.MAIN_COMMODITY_NM,D.SUMP,D.SUMC,(SUMC-SUMP)/SUMP*100 as PERCENT FROM (select AA.MAIN_COMMODITY_NM,IFNULL(BB.SUMP,0) as SUMP,AA.SUMC FROM (select  A.MAIN_COMMODITY_NM as MAIN_COMMODITY_NM,SUM(A.COUNT) as SUMC  FROM ORDERS A where SUBSTRING(CAST(A.EFFDT AS char),1,7)="
     HOTSALESSQLstr+="'"+pre_month+"'" 
-    HOTSALESSQLstr+="and A.STATUS='完成' and USERNAME='"+username+"' group by A.MAIN_COMMODITY_NM order by SUM(A.COUNT) desc LIMIT 5) AA left join (select  B.MAIN_COMMODITY_NM as MAIN_COMMODITY_NM,SUM(B.COUNT) as SUMP  FROM ORDERS B where SUBSTRING(CAST(B.EFFDT AS char),1,7)="
+    HOTSALESSQLstr+="and A.STATUS<>'不成立' and USERNAME='"+username+"' group by A.MAIN_COMMODITY_NM order by SUM(A.COUNT) desc LIMIT 5) AA left join (select  B.MAIN_COMMODITY_NM as MAIN_COMMODITY_NM,SUM(B.COUNT) as SUMP  FROM ORDERS B where SUBSTRING(CAST(B.EFFDT AS char),1,7)="
     HOTSALESSQLstr+="'"+pre2_month+"'" 
-    HOTSALESSQLstr+="and B.STATUS='完成' and USERNAME='"+username+"' group by B.MAIN_COMMODITY_NM) BB on AA.MAIN_COMMODITY_NM=BB.MAIN_COMMODITY_NM) D"
+    HOTSALESSQLstr+="and B.STATUS<>'不成立' and USERNAME='"+username+"' group by B.MAIN_COMMODITY_NM) BB on AA.MAIN_COMMODITY_NM=BB.MAIN_COMMODITY_NM) D"
+    
     resultdisplay=HotSales.objects.raw(HOTSALESSQLstr)
     #GET PROFIT and Margin 
-    RevenueSQLstr="select SUM(ACTUAL_PROFIT) as SUM_ACTUAL_PROFIT from ACTUAL_PROFIT where USERNAME='"+username+"' and YYYYMM="
-    preRevenueSQLstr=RevenueSQLstr+"'"+pre_month+"'" 
-    pre2RevenueSQLstr=RevenueSQLstr+"'"+pre2_month+"'" 
-    preRevenue = SUM_ACTUAL_PROFIT.objects.raw(preRevenueSQLstr)[0]
-    pre2Revenue = SUM_ACTUAL_PROFIT.objects.raw(pre2RevenueSQLstr)[0]
-    CostSQLstr="select USERNAME,YYYYMM,COST from COST where USERNAME='"+username+"' and YYYYMM="
-    preCostSQLstr=CostSQLstr+"'"+pre_month+"'" 
-    pre2CostSQLstr=CostSQLstr+"'"+pre2_month+"'" 
-    preCost = COST.objects.raw(preCostSQLstr)[0]
-    pre2Cost = COST.objects.raw(pre2CostSQLstr)[0]
-    prePROFIT=int(preRevenue.SUM_ACTUAL_PROFIT-preCost.COST)
-    pre2PROFIT=int(pre2Revenue.SUM_ACTUAL_PROFIT-pre2Cost.COST)
+    preRevenue= ACTUAL_PROFIT.objects.filter(USERNAME=username,YYYYMM=pre_month).aggregate(Sum('ACTUAL_PROFIT'))['ACTUAL_PROFIT__sum']
+    pre2Revenue= ACTUAL_PROFIT.objects.filter(USERNAME=username,YYYYMM=pre2_month).aggregate(Sum('ACTUAL_PROFIT'))['ACTUAL_PROFIT__sum']
+
+    preCost= COST_SUM.objects.filter(USERNAME=username,YYYYMM=pre_month)[0].COST
+    pre2Cost= COST_SUM.objects.filter(USERNAME=username,YYYYMM=pre2_month)[0].COST
+
+    prePROFIT=int(int(preRevenue)-preCost)
+    pre2PROFIT=int(int(pre2Revenue)-pre2Cost)
     MomProfit=int((prePROFIT-pre2PROFIT)/pre2PROFIT*100)
     
-    preMargin=round(prePROFIT/preRevenue.SUM_ACTUAL_PROFIT*100,2)
-    pre2Margin=round(pre2PROFIT/pre2Revenue.SUM_ACTUAL_PROFIT*100,2)
+    preMargin=round(prePROFIT/preRevenue*100,2)
+    pre2Margin=round(pre2PROFIT/pre2Revenue*100,2)
     MomMargin=round(preMargin-pre2Margin,2)
 
-    #GET Total Orders
-    TotalOrdersSQLstr="select COUNT(1) as COUNT from ACTUAL_PROFIT where USERNAME='"+username+"' and YYYYMM="
-    preTotalOrdersSQLstr=TotalOrdersSQLstr+"'"+pre_month+"'" 
-    pre2TotalOrdersSQLstr=TotalOrdersSQLstr+"'"+pre2_month+"'" 
-    preTotalOrders = TOTAL_ORDERS.objects.raw(preTotalOrdersSQLstr)[0].COUNT
-    pre2TotalOrders = TOTAL_ORDERS.objects.raw(pre2TotalOrdersSQLstr)[0].COUNT
-    DiffTotalOrders=preTotalOrders-pre2TotalOrders
 
+    #GET Total Orders
+    preTotalOrders= ACTUAL_PROFIT.objects.filter(USERNAME=username,YYYYMM=pre_month).count()
+    pre2TotalOrders= ACTUAL_PROFIT.objects.filter(USERNAME=username,YYYYMM=pre2_month).count()
+    DiffTotalOrders=preTotalOrders-pre2TotalOrders
+    
     #GET REVENUE
-    REVENUESQLstr="select YYYYMM,NUMYYYYMM,MONTH_REVENUE from MONTH_REVENUE where USERNAME='"+username+"' and YYYYMM="
-    thisREVENUESQLstr=REVENUESQLstr+"'"+THISYYYYMM+"'" 
-    thisREVENUE = MONTH_REVENUE.objects.raw(thisREVENUESQLstr)
-    if len(list(thisREVENUE))==0:
+  
+    thisREVENUE = MONTH_REVENUE.objects.filter(USERNAME=username,YYYYMM=THISYYYYMM)
+    if thisREVENUE.count()==0:
         thisREVENUEresult=0
     else:
         thisREVENUEresult=int(thisREVENUE[0].MONTH_REVENUE)
 
     #GET CHART DATA1
-
- 
     numTHISYYYYMM=abc.year*100+abc.month  
-    numSixBFYYYYMM=  numTHISYYYYMM-6
-    chartREVENUESQLstr="select YYYYMM,NUMYYYYMM,MONTH_REVENUE from MONTH_REVENUE where USERNAME='"+username+"' and NUMYYYYMM>="
-    SixBFREVENUESQLstr=chartREVENUESQLstr+str(numSixBFYYYYMM) 
-    Chart1Result = MONTH_REVENUE.objects.raw(SixBFREVENUESQLstr)
-   
+    if abc.month>6:
+        numSixBFYYYYMM=  numTHISYYYYMM-6
+    else:
+        numSixBFYYYYMM=(abc.year-1)*100+abc.month-6+12
+        
+
+    Chart1Result = MONTH_REVENUE.objects.filter(USERNAME=username,NUMYYYYMM__gt=numSixBFYYYYMM,NUMYYYYMM__lte=numTHISYYYYMM)
     Chart1Label=[]
     Chart1Data=[]
     Chart2Label=[]
     Month_dict={'01':'JAN','02': 'FEB' ,'03':'MAR' ,'04':'APR' ,'05':'MAY' ,'06':'JUN' ,'07':'JUL','08': 'AUG' ,'09':'SEP','10': 'OCT','11': 'NOV' ,'12':'DEC'}
     for row in Chart1Result:
+        
         YY=row.YYYYMM[2:4]
         MM=row.YYYYMM[5:]
         MN=row.YYYYMM[2:4]+"'"+Month_dict[MM]
@@ -152,42 +182,33 @@ def index(request):
         Chart1Data.append(row.MONTH_REVENUE)
 
     #GET CHART DATA2
-
-    numLASTYYYYMM=(abc.year-1)*100+abc.month  
-    numLASTSixBFYYYYMM=  numLASTYYYYMM-6
-    chart2PROFITSQLstr="select YYYYMM,NUMYYYYMM,PROFIT from ALL_PROFIT_VW where USERNAME='"+username+"' and NUMYYYYMM>="
-    
-    
-
-    ThisSixBFPROFITSQLstr=chart2PROFITSQLstr+str(numSixBFYYYYMM)+" and NUMYYYYMM<"+str(numTHISYYYYMM)
-    LastSixBFPROFITSQLstr=chart2PROFITSQLstr+str(numLASTSixBFYYYYMM) +" and NUMYYYYMM<"+str(numLASTYYYYMM)
-    Chart2Result_This = ALL_PROFIT_VW.objects.raw(ThisSixBFPROFITSQLstr)
-    Chart2Result_Last = ALL_PROFIT_VW.objects.raw(LastSixBFPROFITSQLstr)
    
-
+    numLASTYYYYMM=(abc.year-1)*100+abc.month  
+    if abc.month>6:
+        numLASTSixBFYYYYMM=  numLASTYYYYMM-6
+    else:
+       
+        numLASTSixBFYYYYMM=(abc.year-2)*100+abc.month-6+12
+  
+    Chart2Result_This=ALL_PROFIT_VW.objects.filter(USERNAME=username,NUMYYYYMM__gt=numSixBFYYYYMM,NUMYYYYMM__lte=numTHISYYYYMM)
+    Chart2Result_Last = ALL_PROFIT_VW.objects.filter(USERNAME=username,NUMYYYYMM__gt=numLASTSixBFYYYYMM,NUMYYYYMM__lte=numLASTYYYYMM)
     Chart2Data_This=[]
     Chart2Data_Last=[]
-
+  
     for row in Chart2Result_This:
         Chart2Data_This.append(row.PROFIT)
     for row in Chart2Result_Last:
         Chart2Data_Last.append(row.PROFIT)
-
+ 
     #GET Profit of The YEAR
-    numpre_month=abc.year*100+int(month)
-    numlastY_pre_month=(abc.year-1)*100+int(month)
+    numpre_month=abc.year*100+int(abc.month)
+    numlastY_pre_month=(abc.year-1)*100+int(abc.month)
     numpre_month_start=abc.year*100+1
     numlastY_pre_month_start=(abc.year-1)*100+1
     
-    ThisTotalPROFITSQLstr="select SUM(PROFIT) as SUM_TOTAL_PROFIT from ALL_PROFIT_VW where USERNAME='"+username+"' and NUMYYYYMM>="
-    ThisTotalPROFITSQLstr=ThisTotalPROFITSQLstr+str(numpre_month_start)+" and NUMYYYYMM<="+str(numpre_month)
-    TotalPROFIT_This = SUM_TOTAL_PROFIT.objects.raw(ThisTotalPROFITSQLstr)[0]
-    TotalPROFIT_This_val=int(TotalPROFIT_This.SUM_TOTAL_PROFIT)
-
-    LastTotalPROFITSQLstr="select SUM(PROFIT) as SUM_TOTAL_PROFIT from ALL_PROFIT_VW where USERNAME='"+username+"' and NUMYYYYMM>="
-    LastTotalPROFITSQLstr=LastTotalPROFITSQLstr+str(numlastY_pre_month_start)+" and NUMYYYYMM<="+str(numlastY_pre_month)
-    TotalPROFIT_Last = SUM_TOTAL_PROFIT.objects.raw(LastTotalPROFITSQLstr)[0]
-    TotalPROFIT_Last_val=int(TotalPROFIT_Last.SUM_TOTAL_PROFIT)
+ 
+    TotalPROFIT_This_val=int(ALL_PROFIT_VW.objects.filter(USERNAME=username,NUMYYYYMM__gte=numpre_month_start,NUMYYYYMM__lte=numpre_month).aggregate(Sum('PROFIT'))['PROFIT__sum'])
+    TotalPROFIT_Last_val=int(ALL_PROFIT_VW.objects.filter(USERNAME=username,NUMYYYYMM__gte=numlastY_pre_month_start,NUMYYYYMM__lte=numlastY_pre_month).aggregate(Sum('PROFIT'))['PROFIT__sum'])
     YOY_TotalPROFIT=round((TotalPROFIT_This_val-TotalPROFIT_Last_val)/TotalPROFIT_Last_val*100,2)
 
 
@@ -196,7 +217,7 @@ def index(request):
     'Margin_Cur':preMargin,'Margin_Mom':MomMargin,
     'Total_Orders_Cur':preTotalOrders,'Total_Orders_Dif':DiffTotalOrders,
     'REVENUE_this':thisREVENUEresult,'Chart1Label':Chart1Label,'Chart1Data':Chart1Data,
-    'THISYYYY':THISYYYY,'LASTYYY':LASTYYY,
+    'THISYYYY':THISYYYY,'LASTYYYY':LASTYYYY,
     'Chart2Label':Chart2Label,'Chart2Data_This':Chart2Data_This,'Chart2Data_Last':Chart2Data_Last,
     'TotalPROFIT_This_val':TotalPROFIT_This_val,'YOY_TotalPROFIT':YOY_TotalPROFIT,'Todayyyymm':Todayyyymm
     }
@@ -240,8 +261,8 @@ def orders(request):
         if username=='Demo':
             username='florine__20'
             demo=True
-    ALLORDERSstr=  "SELECT ORDER_ID,EFFDT,STATUS,MAIN_COMMODITY_NM,SUB_COMMODITY_NM,SHIIPPING_CODE,SHIPPING_TYPE,RECIPIENT_NAME,PRODUCT_GROSS FROM ALLORDERS Where USERNAME='"+username+"' order by EFFDT desc"
-    ALLORDERSDATA=ALLORDERS.objects.raw(ALLORDERSstr)
+
+    ALLORDERSDATA=ALLORDERS.objects.filter(USERNAME=username).order_by('-EFFDT')
     for i in range(len(ALLORDERSDATA)):
         ALLORDERSDATA[i].PRODUCT_GROSS=int(ALLORDERSDATA[i].PRODUCT_GROSS)
         ALLORDERSDATA[i].EFFDT=ALLORDERSDATA[i].EFFDT.strftime('%Y-%m-%d %H:%M')
@@ -272,7 +293,7 @@ def pending(request):
     for i in range(len(ALLORDERSDATA)):
         ALLORDERSDATA[i].PRODUCT_GROSS=int(ALLORDERSDATA[i].PRODUCT_GROSS)
         ALLORDERSDATA[i].EFFDT=ALLORDERSDATA[i].EFFDT.strftime('%Y-%m-%d %H:%M')
-        print(ALLORDERSDATA[i].COMMENT)
+        
         if ALLORDERSDATA[i].COMMENT==None:
             ALLORDERSDATA[i].COMMENT=''
         if demo==True and len(ALLORDERSDATA[i].SHIIPPING_CODE)>0:
@@ -294,7 +315,7 @@ def pending(request):
         arrive_list= request.POST.getlist('arrive')
         done_list= request.POST.getlist('done')
         comment_list= request.POST.getlist('comment')
-        print(comment_list)
+      
         TODO.objects.filter(USERNAME=username).update(CALLITEM=False)
         TODO.objects.filter(USERNAME=username).update(SHIPTAOBAO=False)
         TODO.objects.filter(USERNAME=username).update(ITEMARRIVED=False)
@@ -526,21 +547,9 @@ def cost(request):
         if username=='Demo':
             username='florine__20'
             demo=True
-    ALLCOSTSstr=  "SELECT USERNAME,YYYYMM,TAOBAO,SHIP,TAX,OTHER,COST,COMMENT FROM COST Where USERNAME='"+username+"' order by YYYYMM desc"
-    ALLCOSTDATA=COST.objects.raw(ALLCOSTSstr)
+  
+    ALLCOSTDATA=COST_SUM.objects.filter(USERNAME=username).order_by('-YYYYMM')
    
-    COST_DATA=[]
-   
-    for i in range(len(ALLCOSTDATA)):
-        
-        COST_DATA.append(([ALLCOSTDATA[i].YYYYMM,
-        ALLCOSTDATA[i].TAOBAO,
-        ALLCOSTDATA[i].SHIP,
-        ALLCOSTDATA[i].TAX,
-        ALLCOSTDATA[i].OTHER,
-        ALLCOSTDATA[i].COST,
-        ALLCOSTDATA[i].COMMENT]))
-       
     #check if new month
     UPLYYYYMMDD=str(ALLCOSTDATA[0].YYYYMM)+"-01"
     current_dateTime = datetime.datetime.now()
@@ -549,47 +558,98 @@ def cost(request):
     start_date = datetime.datetime.strptime(UPLYYYYMMDD, '%Y-%m-%d').date()
     start_date=(datetime.date((start_date+relativedelta.relativedelta(months=1)).year, (start_date+relativedelta.relativedelta(months=1)).month, 1))
     vals=[]
-    while start_date<end_date:
-        vals.append([username,start_date.strftime('%Y-%m-%d')[:7],0,0,0,0,0,""])
+
+    while start_date<=end_date:
+        print(start_date)
+        print(end_date)
+        vals.append([username,start_date.strftime('%Y-%m-%d')[:7],1,start_date,0,current_dateTime,""])
         start_date=(datetime.date((start_date+relativedelta.relativedelta(months=1)).year, (start_date+relativedelta.relativedelta(months=1)).month, 1))
     # if len(vals)>0:
-        sql = "INSERT INTO COST (USERNAME,YYYYMM,TAOBAO,SHIP,TAX,OTHER,COST,COMMENT) VALUES (%s,%s, %s,%s,%s, %s,%s)"
+   
+        sql = "INSERT INTO mainapp_cost_detail (USERNAME,YYYYMM,COST_TYPE,EFFDT,AMOUNT,ADDDATETIME,COMMENT) VALUES (%s,%s, %s,%s,%s, %s,%s)"
         mycursor = mydb.cursor()
         mycursor.executemany(sql, vals)
         mydb.commit()
         mycursor.close()
     
-    for u,y,t,s,x,o,c,m in vals:
-      
-        COST_DATA.insert(0, [y,t,s,x,o,c,m])
-    
-    for i in range(len(COST_DATA)):
-        for j in range(len(COST_DATA[i])):
-            if COST_DATA[i][j]==None and COST_DATA[i][j]!=0:
-                COST_DATA[i][j]=''
-       
-    if request.method == 'POST':
-
-        
-        for i in range(len(COST_DATA)): 
-            
-            yyyymm=request.POST.get(str(COST_DATA[i][0]))
-            taobao=request.POST.get(str(COST_DATA[i][1]))
-            ship=request.POST.get(str(COST_DATA[i][2]))
-            tax=request.POST.get(str(COST_DATA[i][3]))
-            other=request.POST.get(str(COST_DATA[i][4]))
-            cost=request.POST.get(str(COST_DATA[i][5]))
-            comment=request.POST.get(str(COST_DATA[i][6]))
-            
-     
-            COST.objects.filter(USERNAME=username, YYYYMM=yyyymm).update(TAOBAO=taobao,SHIP=ship,TAX=tax,OTHER=other,COST=cost,COMMENT=comment)
-
-        redirect=1
-      
-        return render(request, 'home/cost.html',
-        {'COST_DATA':COST_DATA,'redirect':redirect,'redirect_url': '/'}
-        )
-    
     return render(request, 'home/cost.html',
-    {'COST_DATA':COST_DATA,'redirect':redirect}
+    {'COST_DATA':ALLCOSTDATA,'redirect':redirect}
     )
+
+
+@login_required(login_url="/login/")
+def cost_detail(request,YYYYMM):
+    if request.method == 'GET':
+        username = None
+        demo=False
+        if request.user.is_authenticated:
+            username = request.user.username
+            if username=='Demo':
+                username='florine__20'
+                demo=True
+        ALLCOSTDETAILSstr=  "SELECT * FROM COST_DETAIL Where USERNAME='"+username+"' and YYYYMM='"+YYYYMM+"' order by EFFDT"
+        ALLCOSTDETAILDATA=COST_DETAIL.objects.raw(ALLCOSTDETAILSstr)
+        print("GET")
+        for i in range(len(ALLCOSTDETAILDATA)):
+            
+            ALLCOSTDETAILDATA[i].EFFDT=ALLCOSTDETAILDATA[i].EFFDT.strftime('%Y-%m-%d')
+            if ALLCOSTDETAILDATA[i].COMMENT==None:
+                ALLCOSTDETAILDATA[i].COMMENT=''
+
+
+        return render(request, 'home/cost_detail.html',
+        {'COSTDETAIL_DATA':ALLCOSTDETAILDATA,'YYYYMM':YYYYMM,'demo':demo,'username':username}
+        )
+
+# class cost_detail(generic.ListView):
+#     model = COST_DETAIL
+#     context_object_name = 'costs'
+#     template_name = 'home/cost_detail.html'
+
+#     def get_queryset(self):
+#         qs = super().get_queryset()
+#         qs = qs.filter(USERNAME=self.request.user.username, YYYYMM='2023-03')
+#         if 'type' in self.request.GET:
+#             qs = qs.filter(book_type=int(self.request.GET['type']))
+#         return qs
+
+# def details(request,YYYYMM):
+#     data = dict()
+#     username = None
+#     demo=False
+#     if request.user.is_authenticated:
+#         username = request.user.username
+#         if username=='Demo':
+#             username='florine__20'
+#             demo=True
+#     if request.method == 'GET':
+#         costs = COST_DETAIL.objects.filter(USERNAME=username, YYYYMM=YYYYMM)
+#         data['table'] = render_to_string(
+#             '_costs_table.html',
+#             {'costs': costs},
+#             request=request
+#         )
+#         return JsonResponse(data)    
+
+
+class BookCreateView(BSModalCreateView):
+    template_name = 'home/create_cost.html'
+    form_class = BookModelForm
+    success_message = 'Success: Book was created.'
+    # success_url = reverse_lazy('cost_detail-202303')
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('cost_detail', args = (self.object.YYYYMM,))
+    # def get(self, request, ):
+    #     form = self.form_class(initial=self.initial)
+    #     return render(request, self.template_name, {'form': form,})
+    # def get_context_data(self, **kwargs):
+    # # Call the base implementation first to get a context
+    #     context = super().get_context_data(**kwargs)
+    #     # Add in the publisher
+    #     context['YYYYMM'] = self.YYYYMM
+    #     return context
+  
+
+
+
+

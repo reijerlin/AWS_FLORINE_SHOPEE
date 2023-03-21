@@ -1,0 +1,38 @@
+<table class="table table-hover", id="costs-table">
+  <thead>
+    <tr>
+        <!--<th class="border-gray-200">訂單編號</th>-->
+        <th class="border-gray-200"   >YYYY-MM</th>
+        <th class="border-gray-200"  >COST_TYPE</th>
+        <th class="border-gray-200"  >EFFDT</th>
+        <th class="border-gray-200" >AMOUNT</th>
+        <th class="border-gray-200"  >COMMENT</th>               
+    </tr>
+  </thead>
+  <tbody>
+    
+    {% for getdata in COSTDETAIL_DATA %}
+    <tr>
+        <td><span class="fw-normal" >{{getdata.YYYYMM}}</span></td>
+        {% if getdata.COST_TYPE == 1 %}
+        <td><span class="fw-normal">TAOBAO</span></td>
+        {% elif getdata.COST_TYPE == 2  %}
+        <td><span class="fw-normal">SHIPPING</span></td> 
+        {% elif getdata.COST_TYPE == 3  %}
+        <td><span class="fw-normal">TAX</span></td> 
+        {% elif getdata.COST_TYPE == 4  %}
+        <td><span class="fw-normal">OTEHRS</span></td> 
+       
+        {% endif %}
+       
+        <td><span class="fw-normal">{{getdata.EFFDT}}</span></td>
+        <td><span class="fw-normal">{{getdata.AMOUNT}}</span></td>
+        <td><span class="fw-normal">{{getdata.COMMENT}}</span></td>
+        
+    </tr>
+    {% endfor %}
+  
+    
+
+  </tbody>
+</table>

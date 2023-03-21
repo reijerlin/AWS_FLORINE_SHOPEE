@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head> 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- Primary Meta Tags -->
+
+<title>
+  Florine Offical Dashboard
+</title>
+{% load static %}
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="title" content="Florine Shopee ERP">
+<meta name="author" content="Eric Lin">
+<meta name="description" content="Florine's personal ERP">
+<meta name="keywords" content="Eric Lin, Shopee ERP, Shopee, florine__20" />
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="www.florine20.link">
+<meta property="og:title" content="Florine Shopee ERP">
+<meta property="og:description" content="Florine's personal ERP">
+
+
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="www.florine20.link">
+<meta property="twitter:title" content="Florine Shopee ERP">
+<meta property="twitter:description" content="Florine's personal ERP">
+
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'assets/img/favicon/florine__20.jpg' %}">
+
+<!-- FA Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"  
+      integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<!-- Sweet Alert -->
+<link type="text/css" href="{% static 'assets/vendor/sweetalert2/dist/sweetalert2.min.css' %}" rel="stylesheet">
+
+<!-- Notyf -->
+<link type="text/css" href="{% static 'assets/vendor/notyf/notyf.min.css" rel="stylesheet' %}">
+
+<!-- Volt CSS -->
+<link type="text/css" href="{% static 'assets/css/volt.css' %}" rel="stylesheet">
+
+
+<!-- Specific Page JS goes HERE  -->    
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+</head>
+  
+  <body>
+
+    <!-- Includes -->
+    {% include 'includes/message.html' %}
+    {% include 'includes/sidebar.html' %}
+
+   
+    <main class="content">
+
+      {% include 'includes/navigation.html' %}
+  
+      {% block content %}{% endblock content %}
+  
+      {% include 'includes/footer.html' %}
+  
+    </main>
+
+    {% include 'includes/scripts.html' %}
+    <!-- {% block scripts %}
+      <script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
+      <script src="{% static 'assets/js/popper.min.js' %}"></script>
+      <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+      
+      <script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
+    {% endblock scripts %} -->
+
+    {% block extrascripts %}{% endblock extrascripts %}
+
+  </body>
+
+</html>

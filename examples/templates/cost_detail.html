@@ -1,0 +1,290 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  {% include "_modal.html" %}
+
+  <!-- <div class="container mt-3">
+    <div class="row">
+      <div class="col"> -->
+        <!-- <p class="text-primary">A jQuery plugin for creating AJAX driven Django forms in Bootstrap modal.</p>
+        <h4>
+          <strong>1. Signup form {{ YYYYMM }}</strong>
+        </h4>
+        <p>Sign up via Bootstrap modal.</p>
+        <div class="row">
+          <div class="col-12 mb-3">
+            <button id="signup-btn" class="btn btn-primary" type="button" name="button">Sign up</button>
+          </div>
+        </div>
+        <h4>
+          <strong>2. Login form</strong>
+        </h4>
+        <p>Log in via Bootstrap modal. Sign up first.</p>
+        <div class="row">
+          <div class="col-12 mb-3">
+            {% if not user.is_anonymous %}
+              <span>
+                Your are logged in as
+                <strong>{{ user }}</strong>.
+              </span>
+              <a href="{% url 'logout' %}" id="logout-btn" class="btn btn-danger" role="button">Log out</a>
+            {% else %}
+              <button id="login-btn" class="btn btn-primary" type="button" name="button">Log in</button>
+            {% endif %}
+          </div>
+
+        </div>
+        <h4>
+          <strong>3. CRUD actions</strong>
+        </h4>
+        <p>Create, Read, Update and Delete books in Bootstrap modal.</p> -->
+
+        <!-- <div class="row"> -->
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+            <div class="d-block mb-4 mb-md-0">
+            </div>
+           
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <!-- <button class="btn btn-sm btn-gray-800 d-inline-flex align-items-center" id="unlock" onclick="lockFunction()">Unlock</button> -->
+        
+            </div>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <!-- <a href="{% url 'simple_upload' %}" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
+                    Save
+                </a> -->
+                {% if request.user.username != 'Demo' %}
+                <button id="create-book-async" class="btn btn-primary" type="button" name="button"  data-id="{{ YYYYMM }}" data-user="{{ username }}">
+                  <!-- <span class="fa fa-plus mr-2"></span>Add Cost -->
+                  <svg class="icon icon-xs me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                  Add Cost
+                </button>
+                {% endif %}
+                    
+              
+            </div>
+          </div>
+          <!-- <div class="col-12 mb-3"> -->
+            <!-- <button id="create-book-sync" class="btn btn-primary" type="button" name="button">
+              <span class="fa fa-plus mr-2"></span>Create book - Synchronous
+            </button> -->
+            <!-- <button id="create-book-async" class="btn btn-primary" type="button" name="button"  data-id="{{ YYYYMM }}" data-user="{{ username }}">
+              <span class="fa fa-plus mr-2"></span>Create book - Asynchronous
+            </button> -->
+            <!-- <button id="filter-book" class="filter-book btn btn-primary" type="button" name="button" data-form-url="{% url 'filter_book' %}">
+              <span class="fa fa-filter mr-2"></span>Filter books
+            </button> -->
+          <!-- </div> -->
+          <!-- <div class="col-12 mb-3"> -->
+          <!-- {% if 'type' in request.GET %}
+            <p class="filtered-books">Filtered books.</p>
+          {% endif %} -->
+          <div class="card card-body border-0 shadow table-wrapper table-responsive">
+          {% include "_books_table.html" %}
+          
+          </div>
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+            <div class="d-block mb-4 mb-md-0">
+            </div>
+           
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <!-- <button class="btn btn-sm btn-gray-800 d-inline-flex align-items-center" id="unlock" onclick="lockFunction()">Unlock</button> -->
+        
+            </div>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <!-- <a href="{% url 'simple_upload' %}" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
+                    Save
+                </a> -->           
+                <a href="{% url 'cost' %}" class="nav-link">  
+                  <span class="sidebar-text">Return to Cost</span>
+                </a>
+            </div>
+          </div>
+          <!-- </div> -->
+        <!-- </div> -->
+      <!-- </div>
+    </div>
+  </div> -->
+
+{% endblock content %}
+
+{% block extrascripts %}
+  <script type="text/javascript">
+      $(function () {
+          // Login
+          // $("#login-btn").modalForm({
+          //   formURL: "{% url 'login' %}"
+          // });
+
+          // //  Signup
+          // $("#signup-btn").modalForm({
+          //   formURL: "{% url 'signup' %}"
+          // });
+
+          // // Create book synchronous
+          // // function createBookSyncModalForm() {
+          // //   $("#create-book-sync").modalForm({
+          // //       formURL: "{% url 'create_book'  %}",
+          // //       modalID: "#create-modal"
+          // //   });
+          // // }
+          // createBookSyncModalForm();
+
+          // Create book asynchronous button
+          // message
+          var asyncSuccessMessageCreate = [
+            "<div ",
+            "style='position:fixed;top:0;z-index:10000;width:100%;border-radius:0;' ",
+            "class='alert alert-icon alert-success alert-dismissible fade show mb-0' role='alert'>",
+            "Success: Cost was added.",
+            // "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>",
+            // "<span aria-hidden='true'>&times;</span>",
+            // "</button>",
+            "</div>",
+            "<script>",
+            "location.reload();",
+            "$('.alert').fadeTo(5000, 500).slideUp(2000, function () {$('.alert').slideUp(2000).remove();});",
+            "<\/script>"
+          ].join("");
+
+          // modal form
+          function createBookAsyncModalForm() {
+            var id = $("#create-book-async").data('id');
+            var user = $("#create-book-async").data('user');
+            $("#create-book-async").modalForm({
+                formURL: "{% url 'create_book' %}",
+                modalID: "#create-modal",
+                asyncUpdate: true,
+                asyncSettings: {
+                  closeOnSubmit: true,
+                  successMessage: asyncSuccessMessageCreate,
+                  dataUrl: "books/{{ YYYYMM }}",
+                  dataElementId: "#books-table",
+                  dataKey: "table",
+                  addModalFormFunction: reinstantiateModalForms
+                }
+            }
+
+            );
+            // $('#create-modal').on('show.bs.modal',  function () {
+               
+            //     $('#create-modal h3').text('Add Cost for '+id);
+            //     $('#id_YYYYMM').val(id);
+            //     $('#id_USERNAME').val(user);
+               
+            //     // $('#id_YYYYMM').hide();
+            //     // $('#id_YYYYMM_L').hide();
+            //     // $('#id_USERNAME').hide();
+            //     // $('#id_USERNAME_L').hide();
+              
+            //     var h3Text = $('#create-modal h3').text();
+            //     console.log('Add Cost for '+id+user);
+            // });
+          }
+          createBookAsyncModalForm();
+
+          // Update book asynchronous button
+          // message
+          var asyncSuccessMessageUpdate = [
+            "<div ",
+            "style='position:fixed;top:0;z-index:10000;width:100%;border-radius:0;' ",
+            "class='alert alert-icon alert-success alert-dismissible fade show mb-0' role='alert'>",
+            "Success: Cost was updated.",
+            // "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>",
+            // "<span aria-hidden='true'>&times;</span>",
+            // "</button>",
+            "</div>",
+            "<script>",
+            "location.reload();",
+            "$('.alert').fadeTo(5000, 500).slideUp(2000, function () {$('.alert').slideUp(2000).remove();});",
+            "<\/script>"
+          ].join("");
+
+          // modal form
+          function updateBookModalForm() {
+           
+            $(".update-book").each(function () {
+              $(this).modalForm({
+                formURL: $(this).data("form-url"),
+                asyncUpdate: true,
+                asyncSettings: {
+                  closeOnSubmit: true,
+                  successMessage: asyncSuccessMessageUpdate,
+                  dataUrl: "books/{{ YYYYMM }}",
+                  dataElementId: "#books-table",
+                  dataKey: "table",
+                  addModalFormFunction: reinstantiateModalForms
+                }
+              });
+              
+            });modal
+            $('#modal').on('show.bs.modal', function () {
+             
+               $('#id_YYYYMM').hide();
+               $('#id_YYYYMM_L').hide();
+
+               
+               $('#id_USERNAME').hide();
+               $('#id_USERNAME_L').hide();
+             
+
+           });
+           
+          }
+        
+          updateBookModalForm();
+
+          // Delete book buttons - formURL is retrieved from the data of the element
+          function deleteBookModalForm() {
+            $(".delete-book").each(function () {
+                $(this).modalForm({formURL: $(this).data("form-url"), isDeleteForm: true
+               
+              });
+               
+            });
+          }
+          deleteBookModalForm();
+
+          // Read book buttons
+          function readBookModalForm() {
+            $(".read-book").each(function () {
+                $(this).modalForm({formURL: $(this).data("form-url")});
+            });
+          }
+          readBookModalForm();
+
+          function reinstantiateModalForms() {
+            createBookAsyncModalForm();
+            readBookModalForm();
+            updateBookModalForm();
+            deleteBookModalForm();
+          }
+
+          // Filter books button
+          $("#filter-book").each(function () {
+              $(this).modalForm({formURL: $(this).data("form-url")});
+          });
+
+          // Hide message
+          $(".alert").fadeTo(2000, 500).slideUp(500, function () {
+              $(".alert").slideUp(500);
+          });
+      });
+      $(document).on('show.bs.modal', '#create-modal', function() {
+      // $('#create-modal').on('show.bs.modal',  function () {
+        var id = $("#create-book-async").data('id');
+            var user = $("#create-book-async").data('user');
+               $('#create-modal h3').text('Add Cost for '+id);
+               $('#id_YYYYMM').val(id);
+               $('#id_USERNAME').val(user);
+              
+               $('#id_YYYYMM').hide();
+               $('#id_YYYYMM_L').hide();
+               $('#id_USERNAME').hide();
+               $('#id_USERNAME_L').hide();
+             
+               var h3Text = $('#create-modal h3').text();
+               console.log('Add Cost for '+id+user);
+           });
+  </script>
+{% endblock extrascripts %}
