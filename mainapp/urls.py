@@ -33,8 +33,7 @@ urlpatterns = [
   
     # Matches any html file
     #re_path(r'^.*\.*', views.pages, name='pages'),
-    path('add', views.BookCreateView.as_view(), name='create_cost'),
-   
+    
    
     path('api/',include(router.urls)),
 

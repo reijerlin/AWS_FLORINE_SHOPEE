@@ -25,5 +25,9 @@ git add .
 git commit -m "20230304-4 commit"
 git push -u origin main
 
+Please commit your changes or stash them before you merge.
 
+git stash
 git pull origin main
+
+# systemctl restart apache2

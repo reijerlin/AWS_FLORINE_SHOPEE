@@ -5,7 +5,7 @@ from mainapp.models import HotSales
 from mainapp.models import ACTUAL_PROFIT
 
 from mainapp.models import COST_SUM
-from mainapp.models import COST_DETAIL
+
 
 from mainapp.models import MONTH_REVENUE
 from mainapp.models import ALL_PROFIT_VW
@@ -50,22 +50,6 @@ from datetime import date
 from dateutil import relativedelta
 from subprocess import run,PIPE
 
-from django.urls import reverse_lazy
-from bootstrap_modal_forms.generic import (
-    BSModalLoginView,
-    BSModalFormView,
-    BSModalCreateView,
-    BSModalUpdateView,
-    BSModalReadView,
-    BSModalDeleteView
-)
-from django.views import generic
-from .forms import (
-    BookModelForm,
-    CustomUserCreationForm,
-    CustomAuthenticationForm,
-    #BookFilterForm
-)
 
 
 global mydb 
@@ -577,78 +561,8 @@ def cost(request):
     )
 
 
-@login_required(login_url="/login/")
-def cost_detail(request,YYYYMM):
-    if request.method == 'GET':
-        username = None
-        demo=False
-        if request.user.is_authenticated:
-            username = request.user.username
-            if username=='Demo':
-                username='florine__20'
-                demo=True
-        ALLCOSTDETAILSstr=  "SELECT * FROM COST_DETAIL Where USERNAME='"+username+"' and YYYYMM='"+YYYYMM+"' order by EFFDT"
-        ALLCOSTDETAILDATA=COST_DETAIL.objects.raw(ALLCOSTDETAILSstr)
-        print("GET")
-        for i in range(len(ALLCOSTDETAILDATA)):
-            
-            ALLCOSTDETAILDATA[i].EFFDT=ALLCOSTDETAILDATA[i].EFFDT.strftime('%Y-%m-%d')
-            if ALLCOSTDETAILDATA[i].COMMENT==None:
-                ALLCOSTDETAILDATA[i].COMMENT=''
 
 
-        return render(request, 'home/cost_detail.html',
-        {'COSTDETAIL_DATA':ALLCOSTDETAILDATA,'YYYYMM':YYYYMM,'demo':demo,'username':username}
-        )
-
-# class cost_detail(generic.ListView):
-#     model = COST_DETAIL
-#     context_object_name = 'costs'
-#     template_name = 'home/cost_detail.html'
-
-#     def get_queryset(self):
-#         qs = super().get_queryset()
-#         qs = qs.filter(USERNAME=self.request.user.username, YYYYMM='2023-03')
-#         if 'type' in self.request.GET:
-#             qs = qs.filter(book_type=int(self.request.GET['type']))
-#         return qs
-
-# def details(request,YYYYMM):
-#     data = dict()
-#     username = None
-#     demo=False
-#     if request.user.is_authenticated:
-#         username = request.user.username
-#         if username=='Demo':
-#             username='florine__20'
-#             demo=True
-#     if request.method == 'GET':
-#         costs = COST_DETAIL.objects.filter(USERNAME=username, YYYYMM=YYYYMM)
-#         data['table'] = render_to_string(
-#             '_costs_table.html',
-#             {'costs': costs},
-#             request=request
-#         )
-#         return JsonResponse(data)    
-
-
-class BookCreateView(BSModalCreateView):
-    template_name = 'home/create_cost.html'
-    form_class = BookModelForm
-    success_message = 'Success: Book was created.'
-    # success_url = reverse_lazy('cost_detail-202303')
-    def get_success_url(self, **kwargs):
-        return reverse_lazy('cost_detail', args = (self.object.YYYYMM,))
-    # def get(self, request, ):
-    #     form = self.form_class(initial=self.initial)
-    #     return render(request, self.template_name, {'form': form,})
-    # def get_context_data(self, **kwargs):
-    # # Call the base implementation first to get a context
-    #     context = super().get_context_data(**kwargs)
-    #     # Add in the publisher
-    #     context['YYYYMM'] = self.YYYYMM
-    #     return context
-  
 
 
 
