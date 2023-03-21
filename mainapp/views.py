@@ -57,7 +57,7 @@ mydb = mysql.connector.connect(
             host="54.150.254.70",
             user="Eric",
             password="1qaz@WSX",
-            database="dev"
+            database="prd"
             )
 # Create your views here.
 class ALLORDERSViewSet(viewsets.ModelViewSet):
