@@ -58,7 +58,7 @@ Once the database server is installed, log into the MySQL prompt:
 To create a database, database user, and grant all privileges to the database user run the following commands:
 
 mysql> CREATE DATABASE django_db;
-mysql> CREATE USER 'django_user'@'localhost' IDENTIFIED BY 'Pa$$word';
+mysql> CREATE USER 'django_user'@'localhost' IDENTIFIED BY '1qaz@WSX';
 mysql> GRANT ALL ON django_db.* TO 'django_user'@'localhost';
 mysql> FLUSH PRIVILEGES;
 mysql> EXIT
@@ -79,8 +79,17 @@ pip 22.0.2 from /usr/lib/python3/dist-packages/pip (python 3.10)
 Step 5: Install Django Using Virtualenv
 First, create a directory and switch to it with the commands below:
 
+
 # mkdir /var/www/django_project 
 # cd /var/www/django_project
+
+
+# mkdir /var/www/AWS_FLORINE_SHOPEE
+# cd /var/www/AWS_FLORINE_SHOPEE
+
+
+#git clone https://github.com/reijerlin/AWS_FLORINE_SHOPEE.git
+#cd /var/www/AWS_FLORINE_SHOPEE
 Before you install Django, you first need to create a Python virtual environment.
 
 # python3 -m venv django_env
@@ -110,6 +119,8 @@ You will get the following output:
 4.1.1
 Since you are setting a production site ensure you’ve python mysqlclient installed:
 
+sudo apt install pkg-config
+sudo apt-get install python3-dev default-libmysqlclient-dev build-essential
 (django_env) # pip install mysqlclient
 You will get the following output:
 
@@ -124,7 +135,7 @@ Successfully installed mysqlclient-2.1.1
 Step 6: Creating your Django project
 Now you need to create Django project in django_project directory.
 
-(django_env) # django-admin startproject django_app .
+(django_env) # django-admin startproject django_app 
 Next, modify settings.py file:
 
 (django_env) # nano django_app/settings.py
@@ -164,6 +175,9 @@ Once done, save the file and exit the text editor.
 
 Now, You can migrate the initial database schema to our MySQL database using the management script:
 
+#pip install django-widget-tweaks
+
+
 (django_env) # ./manage.py  makemigrations
 (django_env) # ./manage.py  migrate
 Create an administrative user for the project by typing:
@@ -188,7 +202,7 @@ To deactivate the virtual environment run the following command:
 Step 7: Configure Apache Web Server for Django
 Navigate to /etc/apache2/sites-available directory and run the following command to create a configuration file for your installation:
 
-# nano /etc/apache2/sites-available/django.conf
+# vi /etc/apache2/sites-available/django.conf
 Add the following content:
 
 <VirtualHost *:80>
@@ -223,10 +237,52 @@ Add the following content:
         WSGIScriptAlias / /var/www/django_project/django_app/wsgi.py
 
 </VirtualHost>
+
+
+<VirtualHost *:80>
+
+        ServerAdmin admin@florine20.link
+        ServerName florine20.link
+        ServerAlias www.florine20.link
+
+        DocumentRoot /var/www/AWS_FLORINE_SHOPEE/
+
+        ErrorLog ${APACHE_LOG_DIR}/florine20.link.com_error.log
+        CustomLog ${APACHE_LOG_DIR}/florine20.link.com_access.log combined
+
+        Alias /static /var/www/AWS_FLORINE_SHOPEE/static
+        <Directory /var/www/AWS_FLORINE_SHOPEE/static>
+                Require all granted
+        </Directory>
+
+        Alias /media /var/www/AWS_FLORINE_SHOPEE/media
+        <Directory /var/www/AWS_FLORINE_SHOPEE/media>
+                Require all granted
+         </Directory>
+
+        <Directory /var/www/AWS_FLORINE_SHOPEE/webproject>
+                <Files wsgi.py>
+                        Require all granted
+                </Files>
+        </Directory>
+
+        #WSGIDaemonProcess webproject python-path=/var/www/AWS_FLORINE_SHOPEE python-home=/var/www/AWS_FLORINE_SHOPEE/django_env
+        #WSGIProcessGroup webproject
+        #WSGIScriptAlias / /var/www/AWS_FLORINE_SHOPEE/webproject/wsgi.py
+
+
+</VirtualHost>
+
+
+RewriteEngine on
+RewriteCond %{SERVER_NAME} =florine20.link [OR]
+RewriteCond %{SERVER_NAME} =www.florine20.link
+RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
+
 Save the file and Exit.
 
 Enable the Django virtual host:
-
+# sudo a2dissite 000-default.conf
 # a2ensite django.conf
 Restart the Apache web server.
 
@@ -244,4 +300,15 @@ Error message from server: Permission denied:
 sudo chown -R ubuntu:ubuntu .
 
 
+
 #a2dissite django.conf
+
+
+
+
+
+root@ip-172-31-6-234varwwwAWS_FLORINE_SHOPEE# chgrp -R www-data media
+root@ip-172-31-6-234varwwwAWS_FLORINE_SHOPEE# chmod -R g+w media
+a2enmod rewrite
+
+chmod 755 -R AWS_FLORINE_SHOPEE/

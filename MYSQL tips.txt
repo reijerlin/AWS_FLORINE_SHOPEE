@@ -1,0 +1,76 @@
+---------------------------------------------------------------------
+1.C:\Program Files\MySQL\MySQL Server 8.0\bin
+mysql.exe -uroot -p
+1qaz@WSX
+show processlist;
+mysqldump -hlocalhost -uroot -p1qaz@WSX dev | mysql -hlocalhost -uroot -p1qaz@WSX prd;
+2.
+Eric
+1qaz@WSX
+----------------------------------------------------------------------
+C:\> mysqldump -uroot -p --routines --triggers --flush-privileges --all-databases > MySQLData.sql
+mysql -uroot -p < MySQLData.sql
+
+
+
+
+------------------------------------------------------------------------
+
+sudo yum install -y https://dev.mysql.com/get/mysql80-community-release-el9-3.noarch.rpm
+
+sudo yum install -y mysql-community-server
+
+ sudo systemctl start mysqld
+
+sudo systemctl enable mysqld
+
+ sudo systemctl status mysqld
+
+sudo grep 'temporary password' /var/log/mysqld.log  
+
+
+
+
+
+------------------------------------------------------------------
+install specific MYSQL version
+1.down bundle from https://downloads.mysql.com/archives/community/
+2.upload mysql-server_8.0.30-1ubuntu22.04_amd64.deb-bundle.tar
+3.tar -xvf mysql-server_8.0.30-1ubuntu22.04_amd64.deb-bundle.tar
+4. 
+sudo dpkg -i mysql-common_8.0.30-1ubuntu22.04_amd64.deb
+sudo dpkg -i mysql-community-client-plugins_8.0.30-1ubuntu22.04_amd64.deb
+sudo dpkg -i libmysqlclient21_8.0.30-1ubuntu22.04_amd64.deb
+sudo dpkg -i libmysqlclient-dev_8.0.30-1ubuntu22.04_amd64.deb
+sudo dpkg -i mysql-community-client-core_8.0.30-1ubuntu22.04_amd64.deb
+sudo dpkg -i mysql-community-client_8.0.30-1ubuntu22.04_amd64.deb
+sudo dpkg -i mysql-client_8.0.30-1ubuntu22.04_amd64.deb
+sudo apt install libmecab2
+sudo dpkg -i mysql-community-server-core_8.0.30-1ubuntu22.04_amd64.deb
+sudo dpkg -i mysql-community-server_8.0.30-1ubuntu22.04_amd64.deb
+sudo dpkg -i mysql-community-server-debug_8.0.30-1ubuntu22.04_amd64.deb
+sudo dpkg -i mysql-server_8.0.30-1ubuntu22.04_amd64.deb
+
+mysql-community-test_8.0.30-1ubuntu22.04_amd64.deb
+mysql-community-test-debug_8.0.30-1ubuntu22.04_amd64.deb
+mysql-testsuite_8.0.30-1ubuntu22.04_amd64.deb
+
+5.ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '1qaz@WSX';
+
+6. UPDATE mysql.user SET Host='%' WHERE  User='root';
+
+7.sudo mysql_secure_installation
+
+8.GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+
+9.FLUSH PRIVILEGES;
+
+10.sudo service mysql start
+
+11. my.cnf
+[mysqld]
+sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+
+
+mysql linux 表名有大寫之分windows則無
+
