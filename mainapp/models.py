@@ -55,7 +55,7 @@ class ORDERS(models.Model):
     CUSTOMER_COMMENT=models.TextField ()
     COMMENT=models.TextField()
     class Meta:
-        db_table='ORDERS'
+        db_table='orders'
         unique_together = (('USERNAME','ORDER_ID', 'STATUS', 'FAIL_REASON', 'RETURN_STATUS', 'CUSTOMER_ID', 'EFFDT', 'MAIN_COMMODITY_NM', 'SUB_COMMODITY_NM' ))
 
 class COST_DETAIL(models.Model):
@@ -78,7 +78,7 @@ class COST_DETAIL(models.Model):
     COMMENT= models.CharField(max_length=200,blank=True)
     class meta:
         managed = True
-        db_table='COST_DETAIL'
+        db_table='cost_detail'
 
 
 class COST_SUM(models.Model):
@@ -92,7 +92,7 @@ class COST_SUM(models.Model):
    
     class Meta:
         managed = False
-        db_table='COST_SUM'
+        db_table='cost_sum'
 
 class HotSales(models.Model):
     MAIN_COMMODITY_NM = models.CharField(max_length = 200,primary_key=True)
@@ -112,7 +112,7 @@ class ACTUAL_PROFIT(models.Model):
     ACTUAL_PROFIT= models.IntegerField(default=0)
     class Meta:
         managed = False
-        db_table='ACTUAL_PROFIT'
+        db_table='actual_profit'
 
 class MONTH_REVENUE(models.Model):
 
@@ -123,7 +123,7 @@ class MONTH_REVENUE(models.Model):
     
     class Meta:
         managed = False
-        db_table='MONTH_REVENUE'
+        db_table='month_revenue'
 
 class ALL_PROFIT_VW(models.Model):
 
@@ -136,7 +136,7 @@ class ALL_PROFIT_VW(models.Model):
     
     class Meta:
         managed = False
-        db_table='ALL_PROFIT_VW'
+        db_table='all_profit_vw'
 
 class GETYYYYMM(models.Model):
     YYYYMM= models.IntegerField(default=0,primary_key=True)
@@ -163,7 +163,7 @@ class ALLORDERS(models.Model):
 
     class Meta:
         managed = False
-        db_table='ALLORDERS'
+        db_table='allorders'
 
 class TODO(models.Model):
     USERNAME=models.CharField(max_length = 100)
@@ -183,7 +183,7 @@ class TODO(models.Model):
     COMMENT= models.CharField(max_length = 20)
     class Meta:
         managed = True
-        db_table='TODO'
+        db_table='todo'
 
 
 

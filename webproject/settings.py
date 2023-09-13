@@ -27,15 +27,15 @@ TEMPLATE_DIR = os.path.join(os.path.join(BASE_DIR, "mainapp"), "templates")  # R
 SECRET_KEY = 'j4t8b-htj3%e0vi!eazyysx%tch$w3#u=*@c$3njqc9&!j!x9r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-"""
+
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost']
+ALLOWED_HOSTS = ['www.florine20.link','127.0.0.1']
 """
 DEBUG = True
 
-ALLOWED_HOSTS = ['www.florine20.link','127.0.0.1','52.196.116.144']
-
+ALLOWED_HOSTS = ['www.florine20.link','127.0.0.1','52.196.116.144','54.168.99.205']
+"""
 # Application definition
 
 INSTALLED_APPS = [
@@ -97,7 +97,8 @@ DATABASES = {
         'NAME': 'prd',
         'USER': 'Eric',
         'PASSWORD': '1qaz@WSX',
-        'HOST': '54.150.254.70',
+        #'HOST': '54.150.254.70',
+        'HOST': '52.196.116.144',
         'PORT': '3306' ,
         'OPTIONS':{'charset':'utf8mb4'},
     }
@@ -141,10 +142,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 #Add this in your settings.py file:
 STATICFILES_DIRS = [
-    BASE_DIR + '/static'
+    #BASE_DIR + '/static'
+    BASE_DIR + '/mainapp/static'
 ]
 
 MEDIA_URL = '/media/'

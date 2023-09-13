@@ -54,7 +54,8 @@ from subprocess import run,PIPE
 
 global mydb 
 mydb = mysql.connector.connect(
-            host="54.150.254.70",
+#            host="54.150.254.70",
+            host="52.196.116.144",
             user="Eric",
             password="1qaz@WSX",
             database="prd"
@@ -73,7 +74,7 @@ def index(request):
             username='florine__20'
             
     ORDERMNMAXSQLstr="select substring(MAX(EFFDT),1,4)*100+substring(MAX(EFFDT),6,2) as YYYYMM from orders Where USERNAME='"+username+"'"
-    COSTMNMAXSQLstr="select substring(MAX(YYYYMM),1,4)*100+substring(MAX(YYYYMM),6,2) as YYYYMM from COST_SUM Where USERNAME='"+username+"'"
+    COSTMNMAXSQLstr="select substring(MAX(YYYYMM),1,4)*100+substring(MAX(YYYYMM),6,2) as YYYYMM from cost_sum Where USERNAME='"+username+"'"
     
     ORDERMNMAX=GETYYYYMM.objects.raw(ORDERMNMAXSQLstr)[0].YYYYMM
     COSTMNMAX=GETYYYYMM.objects.raw(COSTMNMAXSQLstr)[0].YYYYMM
@@ -107,9 +108,9 @@ def index(request):
     pre2_month=str(pre2_month)[0:7]
     #GET HOTSALES
     #resultdisplay=HotSales.objects.all()
-    HOTSALESSQLstr=  "select D.MAIN_COMMODITY_NM,D.SUMP,D.SUMC,(SUMC-SUMP)/SUMP*100 as PERCENT FROM (select AA.MAIN_COMMODITY_NM,IFNULL(BB.SUMP,0) as SUMP,AA.SUMC FROM (select  A.MAIN_COMMODITY_NM as MAIN_COMMODITY_NM,SUM(A.COUNT) as SUMC  FROM ORDERS A where SUBSTRING(CAST(A.EFFDT AS char),1,7)="
+    HOTSALESSQLstr=  "select D.MAIN_COMMODITY_NM,D.SUMP,D.SUMC,(SUMC-SUMP)/SUMP*100 as PERCENT FROM (select AA.MAIN_COMMODITY_NM,IFNULL(BB.SUMP,0) as SUMP,AA.SUMC FROM (select  A.MAIN_COMMODITY_NM as MAIN_COMMODITY_NM,SUM(A.COUNT) as SUMC  FROM orders A where SUBSTRING(CAST(A.EFFDT AS char),1,7)="
     HOTSALESSQLstr+="'"+pre_month+"'" 
-    HOTSALESSQLstr+="and A.STATUS<>'不成立' and USERNAME='"+username+"' group by A.MAIN_COMMODITY_NM order by SUM(A.COUNT) desc LIMIT 5) AA left join (select  B.MAIN_COMMODITY_NM as MAIN_COMMODITY_NM,SUM(B.COUNT) as SUMP  FROM ORDERS B where SUBSTRING(CAST(B.EFFDT AS char),1,7)="
+    HOTSALESSQLstr+="and A.STATUS<>'不成立' and USERNAME='"+username+"' group by A.MAIN_COMMODITY_NM order by SUM(A.COUNT) desc LIMIT 5) AA left join (select  B.MAIN_COMMODITY_NM as MAIN_COMMODITY_NM,SUM(B.COUNT) as SUMP  FROM orders B where SUBSTRING(CAST(B.EFFDT AS char),1,7)="
     HOTSALESSQLstr+="'"+pre2_month+"'" 
     HOTSALESSQLstr+="and B.STATUS<>'不成立' and USERNAME='"+username+"' group by B.MAIN_COMMODITY_NM) BB on AA.MAIN_COMMODITY_NM=BB.MAIN_COMMODITY_NM) D"
     
@@ -272,7 +273,7 @@ def pending(request):
         if username=='Demo':
             username='florine__20'
             demo=True
-    ALLORDERSstr=  "SELECT ORDER_ID,EFFDT,STATUS,MAIN_COMMODITY_NM,SUB_COMMODITY_NM,SHIIPPING_CODE,SHIPPING_TYPE,RECIPIENT_NAME,PRODUCT_GROSS,CALLITEM,SHIPTAOBAO,ITEMARRIVED,DONE,COMMENT FROM TODO Where  STATUS='待出貨' and USERNAME='"+username+"' order by EFFDT asc"
+    ALLORDERSstr=  "SELECT ORDER_ID,EFFDT,STATUS,MAIN_COMMODITY_NM,SUB_COMMODITY_NM,SHIIPPING_CODE,SHIPPING_TYPE,RECIPIENT_NAME,PRODUCT_GROSS,CALLITEM,SHIPTAOBAO,ITEMARRIVED,DONE,COMMENT FROM todo Where  STATUS='待出貨' and USERNAME='"+username+"' order by EFFDT asc"
     ALLORDERSDATA=TODO.objects.raw(ALLORDERSstr)
     for i in range(len(ALLORDERSDATA)):
         ALLORDERSDATA[i].PRODUCT_GROSS=int(ALLORDERSDATA[i].PRODUCT_GROSS)
@@ -335,7 +336,7 @@ def shipping(request):
             demo=True
 
 
-    ALLPURCHASESstr=  "SELECT ORDER_ID,EFFDT,MAIN_COMMODITY_NM,SUB_COMMODITY_NM,CALLITEM,SHIPTAOBAO,ITEMARRIVED FROM TODO Where STATUS='已出貨' and USERNAME='"+username+"' order by EFFDT asc"
+    ALLPURCHASESstr=  "SELECT ORDER_ID,EFFDT,MAIN_COMMODITY_NM,SUB_COMMODITY_NM,CALLITEM,SHIPTAOBAO,ITEMARRIVED FROM todo Where STATUS='已出貨' and USERNAME='"+username+"' order by EFFDT asc"
     ALLPURCHASEDATA=TODO.objects.raw(ALLPURCHASESstr)
     for i in range(len(ALLPURCHASEDATA)):
         
@@ -402,7 +403,7 @@ def simple_upload(request):
     
         request.session['task'] = task
         
-        deletesql = "delete from ORDERS_UPD_TMP where USERNAME='"+username+"'"
+        deletesql = "delete from orders_upd_tmp where USERNAME='"+username+"'"
         mycursor.execute(deletesql)
         mydb.commit()
  
@@ -461,7 +462,7 @@ def simple_upload(request):
                
            
         
-        sql = "INSERT INTO ORDERS_UPD_TMP (USERNAME,ORDER_ID,STATUS,FAIL_REASON,RETURN_STATUS,CUSTOMER_ID,EFFDT,PRODUCT_GROSS,CUSTOMER_SHIP_FEE,SHOPEE_SHIP_FEE,RETURN_SHIP_FEE,TOTAL_PAID,SHOPEE_SUBSIDY,SHOPEE_REDEEM,CREDIT_DISCOUNT,DISCOUNT_CODE,CUSTOMER_COUPON,CUSTOMER_GIVEBACK,SHOPEE_COUPON,TRANSCATION_FEE,SERVICE_FEE,CASHFLOW_FEE,INSTALLMENTS,CREDIT_CHARGE,MAIN_COMMODITY_NM,SUB_COMMODITY_NM,ORG_PRICE,DIS_PRICE,MAIN_COMMODITY_ID,SUB_COMMODITY_ID,COUNT,PROMOTION_METRIC,SHOPEE_PROMOTION,RECIPIENT_ADDR,RECIPIENT_PHONE,PICKUP_STORE_ID,CITY,DISTRICT,POSTAL,RECIPIENT_NAME,SHIPPING_TYPE,DELIVER_TYPE,PREPARE_TIME,PAYMENT_TYPE,LAST_SHIP_TIME,SHIIPPING_CODE,CUSTOMER_PAID_TIME,ACTUAL_SHIP_TIME,ORDER_COMPLETE_TIME,CUSTOMER_COMMENT,COMMENT) VALUES (%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s)"
+        sql = "INSERT INTO orders_upd_tmp (USERNAME,ORDER_ID,STATUS,FAIL_REASON,RETURN_STATUS,CUSTOMER_ID,EFFDT,PRODUCT_GROSS,CUSTOMER_SHIP_FEE,SHOPEE_SHIP_FEE,RETURN_SHIP_FEE,TOTAL_PAID,SHOPEE_SUBSIDY,SHOPEE_REDEEM,CREDIT_DISCOUNT,DISCOUNT_CODE,CUSTOMER_COUPON,CUSTOMER_GIVEBACK,SHOPEE_COUPON,TRANSCATION_FEE,SERVICE_FEE,CASHFLOW_FEE,INSTALLMENTS,CREDIT_CHARGE,MAIN_COMMODITY_NM,SUB_COMMODITY_NM,ORG_PRICE,DIS_PRICE,MAIN_COMMODITY_ID,SUB_COMMODITY_ID,COUNT,PROMOTION_METRIC,SHOPEE_PROMOTION,RECIPIENT_ADDR,RECIPIENT_PHONE,PICKUP_STORE_ID,CITY,DISTRICT,POSTAL,RECIPIENT_NAME,SHIPPING_TYPE,DELIVER_TYPE,PREPARE_TIME,PAYMENT_TYPE,LAST_SHIP_TIME,SHIIPPING_CODE,CUSTOMER_PAID_TIME,ACTUAL_SHIP_TIME,ORDER_COMPLETE_TIME,CUSTOMER_COMMENT,COMMENT) VALUES (%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s,%s, %s,%s, %s,%s)"
         val = rows
         mycursor.executemany(sql, val)
         mydb.commit()
@@ -500,11 +501,11 @@ def update_order(request):
 
      
     mycursor = mydb.cursor()
-    deletesql = "delete from ORDERS where USERNAME='"+username+"'"+" and EFFDT>='"+delete_key+"'"
+    deletesql = "delete from orders where USERNAME='"+username+"'"+" and EFFDT>='"+delete_key+"'"
     mycursor.execute(deletesql)
     mydb.commit()
     
-    insertsql = "insert into ORDERS (select * from ORDERS_UPD_TMP)"
+    insertsql = "insert into orders (select * from ORDERS_UPD_TMP)"
     mycursor.execute(insertsql)
     mydb.commit()
 
