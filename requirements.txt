@@ -7,3 +7,4 @@ requests==2.28.1
 djangorestframework
 mysqlclient
 whitenoise
+django-widget-tweaks
