@@ -30,7 +30,7 @@ SECRET_KEY = 'j4t8b-htj3%e0vi!eazyysx%tch$w3#u=*@c$3njqc9&!j!x9r'
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['www.florine20.link','127.0.0.1','54.64.227.16']
+ALLOWED_HOSTS = ['www.florine20.link']
 """
 DEBUG = True
 
@@ -130,7 +130,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Taipei'
 
 USE_I18N = True
 
