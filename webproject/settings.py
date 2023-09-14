@@ -30,7 +30,7 @@ SECRET_KEY = 'j4t8b-htj3%e0vi!eazyysx%tch$w3#u=*@c$3njqc9&!j!x9r'
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['www.florine20.link','127.0.0.1']
+ALLOWED_HOSTS = ['www.florine20.link','127.0.0.1','54.64.227.16']
 """
 DEBUG = True
 
@@ -98,7 +98,8 @@ DATABASES = {
         'USER': 'Eric',
         'PASSWORD': '1qaz@WSX',
         #'HOST': '54.150.254.70',
-        'HOST': '52.196.116.144',
+        #'HOST': '52.196.116.144',
+        'HOST': '54.64.227.16',
         'PORT': '3306' ,
         'OPTIONS':{'charset':'utf8mb4'},
     }
@@ -153,3 +154,5 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+

@@ -55,7 +55,8 @@ from subprocess import run,PIPE
 global mydb 
 mydb = mysql.connector.connect(
 #            host="54.150.254.70",
-            host="52.196.116.144",
+#            host="52.196.116.144",
+             host="54.64.227.16",
             user="Eric",
             password="1qaz@WSX",
             database="prd"
